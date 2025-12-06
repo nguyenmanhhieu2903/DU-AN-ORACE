@@ -24,7 +24,14 @@ const AddKH = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center p-8">
+    <div className="min-h-screen bg-gray-100 flex items-center justify-center p-8"
+          style={{
+          backgroundImage: "url('/img/oto2.jpg')",
+          backgroundSize: "cover",
+          backgroundRepeat: "no-repeat",
+          backgroundPosition: "center"
+        }}
+    >
       <div className="bg-white shadow-lg rounded-lg p-8 w-full max-w-[700px]">
         <h2 className="text-3xl font-bold mb-6 text-orange-600 text-center">
           Thêm Khách Hàng

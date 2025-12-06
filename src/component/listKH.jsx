@@ -50,53 +50,54 @@ const ListKH = () => {
 
                 {/* Bảng danh sách */}
                 <div className="overflow-auto">
-                    <table className="w-full border border-orange-400">
+                    <div className="border border-orange-400 rounded-lg overflow-hidden shadow-md">
+                        <table className="w-full border-collapse">
                         <thead>
                             <tr className="bg-orange-500 text-white">
-                                <th className="p-2 border">Mã KH</th>
-                                <th className="p-2 border">Họ và tên</th>
-                                <th className="p-2 border">Ngày sinh</th>
-                                <th className="p-2 border">CCCD</th>
-                                <th className="p-2 border">Giới tính</th>
-                                <th className="p-2 border">Số điện thoại</th>
-                                <th className="p-2 border">Sửa</th>
-                                <th className="p-2 border">Xóa</th>
-                                <th className="p-2 border">Thông tin xe</th>
+                            <th className="p-2 border border-orange-400">Mã KH</th>
+                            <th className="p-2 border border-orange-400">Họ và tên</th>
+                            <th className="p-2 border border-orange-400">Ngày sinh</th>
+                            <th className="p-2 border border-orange-400">CCCD</th>
+                            <th className="p-2 border border-orange-400">Giới tính</th>
+                            <th className="p-2 border border-orange-400">Số điện thoại</th>
+                            <th className="p-2 border border-orange-400">Sửa</th>
+                            <th className="p-2 border border-orange-400">Xóa</th>
+                            <th className="p-2 border border-orange-400">Thông tin xe</th>
                             </tr>
                         </thead>
 
                         <tbody>
-                            {[1, 2, 3, 4, 5].map((id) => (
-                                <tr key={id} className="text-center bg-white hover:bg-gray-100">
-                                    <td className="p-2 border">{id}</td>
-                                    <td className="p-2 border">Tên khách hàng {id}</td>
-                                    <td className="p-2 border">25-12-1994</td>
-                                    <td className="p-2 border">123456789</td>
-                                    <td className="p-2 border">Nữ</td>
-                                    <td className="p-2 border">0962356988</td>
-
-                                    <td className="p-2 border cursor-pointer">✏️</td>
-                                    <td className="p-2 border cursor-pointer">🗑️</td>
-
-                                    <td
-                                        className="p-2 border cursor-pointer"
-                                        onClick={() => {
-                                            setSelected({
-                                                loaiXe: "Ô tô",
-                                                mauxe: "Đỏ",
-                                                bienSo: "30H-123.45",
-                                                maKH: "KH00" + id,
-                                            });
-                                            setOpen(true);
-                                        }}
-                                    >
-                                        👁️
-                                    </td>
-                                </tr>
+                            {[1,2,3,4,5].map(id => (
+                            <tr key={id} className="text-center bg-white hover:bg-gray-100">
+                                <td className="p-2 border border-orange-300">{id}</td>
+                                <td className="p-2 border border-orange-300">Tên khách hàng {id}</td>
+                                <td className="p-2 border border-orange-300">25-12-1994</td>
+                                <td className="p-2 border border-orange-300">123456789</td>
+                                <td className="p-2 border border-orange-300">Nữ</td>
+                                <td className="p-2 border border-orange-300">0962356988</td>
+                                <td className="p-2 border border-orange-300 cursor-pointer">✏️</td>
+                                <td className="p-2 border border-orange-300 cursor-pointer">🗑️</td>
+                                <td
+                                className="p-2 border border-orange-300 cursor-pointer"
+                                onClick={() => {
+                                    setSelected({
+                                    loaiXe: "Ô tô",
+                                    mauxe: "Đỏ",
+                                    bienSo: "30H-123.45",
+                                    maKH: "KH00" + id,
+                                    });
+                                    setOpen(true);
+                                }}
+                                >
+                                👁️
+                                </td>
+                            </tr>
                             ))}
                         </tbody>
-                    </table>
+                        </table>
+                    </div>
                 </div>
+
 
                 {/* Footer & Pagination */}
                 <div className="flex justify-between">

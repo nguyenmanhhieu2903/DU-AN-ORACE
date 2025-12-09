@@ -92,15 +92,17 @@ const TicketList = () => {
       <div className="border border-orange-400 rounded-lg overflow-hidden shadow-md">
         <table className="w-full text-left border-collapse ">
           <thead>
-            <tr className="bg-orange-500 border border-orange-400 text-white text-sm">
-              <th className="p-3 border">Mã vé</th>
-              <th className="p-3 border">Biển số xe</th>
-              <th className="p-3 border">Loại xe</th>
-              <th className="p-3 border">Thời gian vào</th>
-              <th className="p-3 border">Thời gian ra</th>
-              <th className="p-3 border">Tổng thời gian</th>
-              <th className="p-3 border">Trạng thái</th>
-              <th className="p-3 border">Tiền phí</th>
+            <tr className="bg-orange-500 border border-orange-400 text-white text-center">
+              <th className="p-3 border border-orange-400">Mã vé</th>
+              <th className="p-3 border border-orange-400">Biển số xe</th>
+              <th className="p-3 border border-orange-400">Loại xe</th>
+              <th className="p-3 border border-orange-400">Thời gian vào</th>
+              <th className="p-3 border border-orange-400">Thời gian ra</th>
+              <th className="p-3 border border-orange-400">Tổng thời gian</th>
+              <th className="p-3 border border-orange-400">Trạng thái</th>
+              <th className="p-3 border border-orange-400">Tiền phí</th>
+              <th className="p-3 border border-orange-400">Sửa</th>
+              <th className="p-3 border border-orange-400">Xóa</th>
             </tr>
           </thead>
 
@@ -113,7 +115,7 @@ const TicketList = () => {
               </tr>
             ) : (
               filtered.map((t) => (
-                <tr key={t.code} className="hover:bg-gray-50">
+                <tr key={t.code} className="text-center hover:bg-gray-50">
                   <td className="p-3 border border-orange-400">{t.code}</td>
                   <td className="p-3 border border-orange-400">{t.plate}</td>
                   <td className="p-3 border border-orange-400">{t.type}</td>
@@ -122,6 +124,8 @@ const TicketList = () => {
                   <td className="p-3 border border-orange-400">{t.totalTime}</td>
                   <td className="p-3 border border-orange-400 font-bold text-blue-600">{t.status}</td>
                   <td className="p-3 border border-orange-400 font-semibold text-green-700">{t.fee}</td>
+                  <td className="p-3 border border-orange-300 cursor-pointer justify-center">✏️</td>
+                  <td className="p-3 border border-orange-300 cursor-pointer justify-center">🗑️</td>
                 </tr>
               ))
             )}
@@ -134,7 +138,7 @@ const TicketList = () => {
           {/* LEFT BUTTON GROUP */}
           <div className="flex gap-3">
             <a
-              href="/addKH"
+              href=""
               className="bg-orange-400 text-white px-5 py-2 rounded-lg shadow hover:bg-orange-600 transition"
             >
               Thêm vé

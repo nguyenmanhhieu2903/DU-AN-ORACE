@@ -32,7 +32,7 @@ const Header = () =>{
                     {/* Menu */}
                     <div className="flex gap-6 text-lg">
                         <a
-                            href=""
+                            href="/"
                             className="relative font-medium text-indigo-500
                                 after:content-[''] after:absolute after:left-0 after:-bottom-4 
                                 after:w-0 after:h-1.5 after:bg-fuchsia-500 

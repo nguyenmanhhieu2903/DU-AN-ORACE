@@ -5,6 +5,8 @@ const ListKH = () => {
     const [open, setOpen] = useState(false); // bật/tắt hidden panel
     const [selected, setSelected] = useState(null); // thông tin xe
 
+    // p-6 max-w-7xl mx-auto div đầu tiên căn lề giữa
+
     return (
         <div className="">
             <div className="p-6 bg-gray-100 min-h-screen">
@@ -84,7 +86,7 @@ const ListKH = () => {
                                     loaiXe: "Ô tô",
                                     mauxe: "Đỏ",
                                     bienSo: "30H-123.45",
-                                    maKH: "KH00" + id,
+                                    maKH: + id,
                                     });
                                     setOpen(true);
                                 }}
@@ -100,29 +102,56 @@ const ListKH = () => {
 
 
                 {/* Footer & Pagination */}
-                <div className="flex justify-between">
-                    <a href="/addKH" className="mt-6 bg-orange-500 text-white px-5 py-2 rounded hover:bg-orange-600">
-                        Thêm khách hàng
-                    </a>
+                <div> 
+                    <div className="flex justify-between items-center mt-6">
 
-                    <div className="flex items-center gap-2 mt-6">
-                        <button className="px-3 py-1 border rounded bg-orange-500 text-white hover:bg-orange-600">
-                            Trước
+                    {/* LEFT BUTTON GROUP */}
+                    <div className="flex gap-3">
+                        <a
+                        href="/addKH"
+                        className="bg-orange-400 text-white px-5 py-2 rounded-lg shadow hover:bg-orange-600 transition"
+                        >
+                        Thêm vé
+                        </a>
+
+                        <a
+                        href="/"
+                        className="bg-orange-400 text-white px-5 py-2 rounded-lg shadow hover:bg-orange-600 transition"
+                        >
+                        Quay lại
+                        </a>
+                    </div>
+
+                    {/* PAGINATION */}
+                    <div className="flex items-center gap-2">
+
+                        <button className="px-3 py-1 rounded-lg bg-orange-500 text-white hover:bg-orange-600 transition">
+                        Trước
                         </button>
 
-                        <button className="px-3 py-1 border rounded bg-orange-500 text-white hover:bg-orange-600">1</button>
-                        <button className="px-3 py-1 border rounded bg-orange-500 text-white hover:bg-orange-600">2</button>
-                        <button className="px-3 py-1 border rounded bg-orange-500 text-white hover:bg-orange-600">3</button>
-                        <button className="px-3 py-1 border rounded bg-orange-500 text-white hover:bg-orange-600">4</button>
-
-                        <button className="px-3 py-1 border rounded bg-orange-500 text-white hover:bg-orange-600">
-                            ...
+                        <button className="px-3 py-1 rounded-lg bg-orange-500 text-white hover:bg-orange-600 transition">
+                        1
+                        </button>
+                        <button className="px-3 py-1 rounded-lg bg-gray-200 hover:bg-gray-300 transition">
+                        2
+                        </button>
+                        <button className="px-3 py-1 rounded-lg bg-gray-200 hover:bg-gray-300 transition">
+                        3
+                        </button>
+                        <button className="px-3 py-1 rounded-lg bg-gray-200 hover:bg-gray-300 transition">
+                        4
                         </button>
 
-                        <button className="px-3 py-1 border rounded bg-orange-500 text-white hover:bg-orange-600">
-                            Sau
+                        <button className="px-3 py-1 rounded-lg bg-gray-300 text-black">
+                        ...
+                        </button>
+
+                        <button className="px-3 py-1 rounded-lg bg-orange-500 text-white hover:bg-orange-600 transition">
+                        Sau
                         </button>
                     </div>
+                    </div>
+
                 </div>
 
                 {/* HIDDEN PANEL - nằm ngay trong trang */}

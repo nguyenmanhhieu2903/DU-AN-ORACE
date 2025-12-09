@@ -7,6 +7,7 @@ import LoginHeader from './component/login.jsx'
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import ListKH from './component/listKH.jsx'
 import AddKH from './component/addKH.jsx'
+import TicketList from './component/ticketlist.jsx'
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
         <Route path="/login" element={<LoginHeader />} />
         <Route path="/listKH" element={<ListKH />} />
         <Route path="/addKH" element={<AddKH />} />
+        <Route path="/ticketlist" element={<TicketList />} />
       </Routes>
     </Router>
   );

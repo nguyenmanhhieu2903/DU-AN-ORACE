@@ -42,14 +42,14 @@ const Header = () =>{
                             Trang Chủ
                         </a>
                         <a
-                            href=""
+                            href="/ticketlist"
                             className="relative font-medium text-indigo-500
                                 after:content-[''] after:absolute after:left-0 after:-bottom-4 
                                 after:w-0 after:h-1.5 after:bg-fuchsia-500 
                                 after:transition-all after:duration-300
                                 hover:after:w-full hover:text-fuchsia-500"
                         >
-                            Liên Hệ
+                            Vé
                         </a>
                         <a
                             href="/listKH"

@@ -1,194 +1,303 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Header from "./header";
-
-const customers = [
-{ id: 1, name: "Nguyễn Văn A", address: "Hà Nội", gender: "Nam", phone: "0912345678" },
-{ id: 2, name: "Trần Thị B", address: "Hải Phòng", gender: "Nữ", phone: "0987654321" },
-{ id: 3, name: "Lê Văn C", address: "Đà Nẵng", gender: "Nam", phone: "0901122334" },
-{ id: 4, name: "Phạm Thị D", address: "Cần Thơ", gender: "Nữ", phone: "0933445566" },
-{ id: 5, name: "Hoàng Văn E", address: "Bắc Ninh", gender: "Nam", phone: "0977889900" },
-{ id: 6, name: "Vũ Văn F", address: "TPHCM", gender: "Nam", phone: "0911223344" },
-{ id: 7, name: "Đỗ Thị G", address: "Hà Nội", gender: "Nữ", phone: "0988112233" },
-];
+import axios from "axios";
 
 const ListKH = () => {
+  // ----- STATE QUẢN LÝ DỮ LIỆU --------
+  const [customers, setCustomers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-    const [open, setOpen] = useState(false); // bật/tắt hidden panel
-    const [selected, setSelected] = useState(null); // thông tin xe
+  const [open, setOpen] = useState(false);
+  const [selected, setSelected] = useState(null);
 
-    const [currentPage, setCurrentPage] = useState(1);
-    const itemsPerPage = 5;
+  // ----- STATE TÌM KIẾM --------
+  const [search, setSearch] = useState({
+    name: "",
+    phone: "",
+    address: ""
+  });
 
+  useEffect(() => {
+  const fetchCustomers = async () => {
+    try {
+      setLoading(true);
 
-    const indexOfLast = currentPage * itemsPerPage;
-    const indexOfFirst = indexOfLast - itemsPerPage;
-    const currentCustomers = customers.slice(indexOfFirst, indexOfLast);
+      const response = await axios.get(
+        "http://localhost:8080/api/khach-hang"
+      );
 
+      // ✅ KIỂM TRA TOÀN BỘ RESPONSE
+      console.log("API response:", response);
 
-    const totalPages = Math.ceil(customers.length / itemsPerPage);
+      // ✅ KIỂM TRA DỮ LIỆU TRẢ VỀ
+      console.log("Danh sách khách hàng:", response.data);
 
-    // p-6 max-w-7xl mx-auto div đầu tiên căn lề giữa
+      const activeCustomers = response.data.filter(
+        c => c.DELETE_FLAG !== 1
+      );
 
-    return (
-        <div className="">
-            <Header />
-            <div className="p-6 bg-gray-100 min-h-screen">
-                <h1 className="text-4xl font-bold text-center pb-5">DANH SÁCH KHÁCH HÀNG</h1>
+      // ✅ KIỂM TRA SAU KHI FILTER
+      console.log("Khách hàng còn hiệu lực:", activeCustomers);
 
-                {/* Form tìm kiếm */}
-                <div className="bg-white p-6 rounded-lg shadow-md mb-6">
-                    <div className="grid grid-cols-3 gap-3 mb-4">
+      setCustomers(activeCustomers);
+    } catch (err) {
+      setError("Không thể kết nối đến máy chủ API.");
+      console.error("API Error:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-                        <div>
-                            <label className="font-semibold text-gray-700">Tên KH:</label>
-                            <input type="text" placeholder="Tên khách hàng" className="w-full border border-orange-400 rounded px-3 py-2 mt-1" />
-                        </div>
+  fetchCustomers();
+}, []);
 
-                        <div>
-                            <label className="font-semibold text-gray-700">SDT:</label>
-                            <input type="text" placeholder="Số điện thoại" className="w-full border border-orange-400 rounded px-3 py-2 mt-1" />
-                        </div>
+  // ----- FILTER --------
+  const filtered = customers.filter(c =>
+  (c.hoTen || "").toLowerCase().includes(search.name.toLowerCase()) &&
+  (c.soDienThoai || "").includes(search.phone) &&
+  (search.address === "" || c.diaChi === search.address)
+);
 
-                        <div></div>
+  // ----- PHÂN TRANG -------
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
 
-                        <div>
-                            <label className="font-semibold text-gray-700">Địa chỉ:</label>
-                            <select className="border border-amber-400 rounded px-3 py-2 w-full md:col-span-2">
-                                <option value="">-- Chọn tỉnh/thành phố --</option>
+  const indexOfLast = currentPage * itemsPerPage;
+  const indexOfFirst = indexOfLast - itemsPerPage;
+  const currentCustomers = filtered.slice(indexOfFirst, indexOfLast);
+  const totalPages = Math.ceil(filtered.length / itemsPerPage);
 
-                                <option>Hà Nội</option>
-                                <option>TP Hồ Chí Minh</option>
-                                <option>Hải Phòng</option>
-                                <option>Đà Nẵng</option>
-                                <option>Cần Thơ</option>
-                                <option>Bắc Giang</option>
-                                <option>Bắc Kạn</option>
-                                <option>Bạc Liêu</option>
-                                <option>Bắc Ninh</option>
-                                <option>Lai Châu</option>
-                                <option>Lâm Đồng</option>
-                                <option>Lạng Sơn</option>
-                            </select>
-                        </div>
-                    </div>
+  const handleSearchChange = (field, value) => {
+    setSearch({ ...search, [field]: value });
+    setCurrentPage(1);
+  };
 
-                    <div className="flex gap-4">
-                        <button className="bg-orange-500 text-white px-5 py-2 rounded hover:bg-orange-600">Tìm kiếm</button>
-                        <button className="bg-orange-500 text-white px-5 py-2 rounded hover:bg-orange-600">Xem tất cả</button>
-                    </div>
-                </div>
+  return (
+    <div>
+      <Header />
 
-                {/* Bảng danh sách */}
-                <div className="overflow-auto">
-                    <div className="border border-orange-400 rounded-lg overflow-hidden shadow-md">
-                    <table className="w-full border-collapse">
-                    <thead>
-                    <tr className="bg-orange-500 text-white">
-                    <th className="p-2 border border-orange-400">Mã KH</th>
-                    <th className="p-2 border border-orange-400">Họ và tên</th>
-                    <th className="p-2 border border-orange-400">Địa chỉ</th>
-                    <th className="p-2 border border-orange-400">Giới tính</th>
-                    <th className="p-2 border border-orange-400">Số điện thoại</th>
-                    <th className="p-2 border border-orange-400">Sửa</th>
-                    <th className="p-2 border border-orange-400">Xóa</th>
-                    <th className="p-2 border border-orange-400">Thông tin xe</th>
-                    </tr>
-                    </thead>
+      <div className="p-6 bg-gray-100 min-h-screen font-sans">
+        <h1 className="text-4xl font-bold text-center pb-5 text-orange-600">
+          DANH SÁCH KHÁCH HÀNG
+        </h1>
 
-
-                    <tbody>
-                    {currentCustomers.map((kh) => (
-                    <tr key={kh.id} className="text-center bg-white hover:bg-gray-100">
-                    <td className="p-2 border border-orange-300">{kh.id}</td>
-                    <td className="p-2 border border-orange-300">{kh.name}</td>
-                    <td className="p-2 border border-orange-300">{kh.address}</td>
-                    <td className="p-2 border border-orange-300">{kh.gender}</td>
-                    <td className="p-2 border border-orange-300">{kh.phone}</td>
-                    <td className="p-2 border border-orange-300 cursor-pointer">✏️</td>
-                    <td className="p-2 border border-orange-300 cursor-pointer">🗑️</td>
-
-
-                    <td
-                    className="p-2 border border-orange-300 cursor-pointer"
-                    onClick={() => {
-                    setSelected({ loaiXe: "Ô tô", mauxe: "Đỏ", bienSo: "30H-123.45", maKH: kh.id });
-                    setOpen(true);
-                    }}
-                    >
-                    👁️
-                    </td>
-                    </tr>
-                    ))}
-                    </tbody>
-                    </table>
-                    </div>
-                </div>
-
-
-                {/* Footer & Pagination */}
-                <div className="flex justify-between items-center mt-6">
-                    <div className="flex gap-3">
-                    <a href="/addKH" className="bg-orange-400 text-white px-5 py-2 rounded-lg shadow hover:bg-orange-600 transition">Thêm khách hàng</a>
-                    <a href="/" className="bg-orange-400 text-white px-5 py-2 rounded-lg shadow hover:bg-orange-600 transition">Quay lại</a>
-                    </div>
-
-
-                    <div className="flex items-center gap-2">
-                    <button
-                    disabled={currentPage === 1}
-                    onClick={() => setCurrentPage(currentPage - 1)}
-                    className="px-3 py-1 rounded-lg bg-orange-500 text-white hover:bg-orange-700"
-                    >
-                    Trước
-                    </button>
-
-
-                    {[...Array(totalPages)].map((_, index) => (
-                    <button
-                    key={index}
-                    onClick={() => setCurrentPage(index + 1)}
-                    className={`px-3 py-1 rounded-lg ${currentPage === index + 1 ? "bg-orange-500 text-white" : "bg-gray-200 hover:bg-gray-300"}`}
-                    >
-                    {index + 1}
-                    </button>
-                    ))}
-
-
-                    <button
-                    disabled={currentPage === totalPages}
-                    onClick={() => setCurrentPage(currentPage + 1)}
-                    className="px-3 py-1 rounded-lg bg-orange-500 text-white hover:bg-orange-700"
-                    >
-                    Sau
-                    </button>
-                    </div>
-                </div>
-
-                {/* HIDDEN PANEL - nằm ngay trong trang */}
-                {open && selected && (
-                    <div className="mt-8 bg-white shadow-lg rounded-lg p-6 border border-orange-400">
-
-                        <h2 className="text-xl font-bold text-orange-600 mb-4">
-                            Thông Tin Xe
-                        </h2>
-
-                        <p><strong>Loại xe:</strong> {selected.loaiXe}</p>
-                        <p><strong>Biển số xe:</strong> {selected.bienSo}</p>
-                        <p><strong>Màu xe:</strong> {selected.mauxe}</p>
-                        <p><strong>Mã khách hàng:</strong> {selected.maKH}</p>
-
-                        <button
-                            onClick={() => setOpen(false)}
-                            className="mt-5 bg-orange-500 text-white px-5 py-2 rounded hover:bg-orange-600"
-                        >
-                            Ẩn thông tin
-                        </button>
-
-                    </div>
-                )}
+        {/* FORM TÌM KIẾM */}
+        <div className="bg-white p-6 rounded-lg shadow-md mb-6 border-t-4 border-orange-500">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4">
+            <div>
+              <label className="font-semibold text-gray-700">
+                Tên khách hàng:
+              </label>
+              <input
+                type="text"
+                className="w-full border border-gray-300 rounded px-3 py-2 mt-1 focus:ring-2 focus:ring-orange-400 outline-none"
+                placeholder="Nhập họ tên..."
+                value={search.name}
+                onChange={e =>
+                  handleSearchChange("name", e.target.value)
+                }
+              />
             </div>
+
+            <div>
+              <label className="font-semibold text-gray-700">
+                Số điện thoại:
+              </label>
+              <input
+                type="text"
+                className="w-full border border-gray-300 rounded px-3 py-2 mt-1 focus:ring-2 focus:ring-orange-400 outline-none"
+                placeholder="Nhập SĐT..."
+                value={search.phone}
+                onChange={e =>
+                  handleSearchChange("phone", e.target.value)
+                }
+              />
+            </div>
+
+            <div>
+              <label className="font-semibold text-gray-700">
+                Địa chỉ:
+              </label>
+              <select
+                className="w-full border border-gray-300 rounded px-3 py-2 mt-1 focus:ring-2 focus:ring-orange-400 outline-none"
+                value={search.address}
+                onChange={e =>
+                  handleSearchChange("address", e.target.value)
+                }
+              >
+                <option value="">-- Tất cả địa chỉ --</option>
+
+                {[...new Set(customers.map(c => c.diaChi).filter(Boolean))]
+                  .map((addr, index) => (
+                    <option
+                      key={`addr-${index}`}
+                      value={addr}
+                    >
+                      {addr}
+                    </option>
+                  ))}
+              </select>
+            </div>
+          </div>
+
+          <div className="flex gap-4">
+            <button className="bg-orange-500 text-white px-6 py-2 rounded shadow hover:bg-orange-600 transition">
+              Tìm kiếm
+            </button>
+
+            <button
+              className="bg-orange-500 text-white px-6 py-2 rounded shadow hover:bg-orange-600 transition"
+              onClick={() =>
+                setSearch({ name: "", phone: "", address: "" })
+              }
+            >
+              Làm mới
+            </button>
+          </div>
         </div>
-    );
+
+        {/* BẢNG DANH SÁCH */}
+        <div className="bg-white rounded-lg shadow-md overflow-hidden border border-gray-200">
+          {loading ? (
+            <div className="text-center py-20 text-orange-500 font-medium">
+              Đang tải dữ liệu khách hàng...
+            </div>
+          ) : error ? (
+            <div className="text-center py-20 text-red-500">
+              {error}
+            </div>
+          ) : (
+            <div className="bg-white rounded-lg shadow-md overflow-hidden border border-orange-400">
+            <table className="w-full text-sm text-left border-collapse">
+              <thead className=" text-white uppercase bg-orange-500">
+                <tr className="text-center">
+                  {/* Thêm border-x và border-white để phân tách rõ các cột tiêu đề */}
+                  <th className="p-4 border border-orange-400 border-r-white/30">Mã KH</th>
+                  <th className="p-4 border border-orange-400 border-r-white/30">Họ và tên</th>
+                  <th className="p-4 border border-orange-400 border-r-white/30">Số điện thoại</th>
+                  <th className="p-4 border border-orange-400 border-r-white/30">Giới tính</th>
+                  <th className="p-4 border border-orange-400 border-r-white/30">Địa chỉ</th>
+                  <th className="p-4 border border-orange-400 border-r-white/30">Sửa</th>
+                  <th className="p-4 border border-orange-400 border-r-white/30">Xóa</th>
+                  <th className="p-4 border border-orange-400">Thông Tin Xe</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                {currentCustomers.length === 0 ? (
+                  <tr>
+                    <td
+                      colSpan="8"
+                      className="text-center py-10 text-gray-500 border border-orange-400"
+                    >
+                      Không tìm thấy khách hàng nào
+                    </td>
+                  </tr>
+                ) : (
+                  currentCustomers.map((kh, index) => (
+                    <tr
+                      key={`kh-${kh.maKhachHang ?? index}`}
+                      className="hover:bg-orange-50 transition text-center"
+                    >
+                      {/* Thêm border border-orange-500 vào từng ô td */}
+                      <td className="p-4 font-medium text-gray-900 border border-orange-400">
+                        {kh.maKhachHang}
+                      </td>
+                      <td className="p-4 text-center border border-orange-400">
+                        {kh.hoTen}
+                      </td>
+                      <td className="p-4 border border-orange-400">
+                        {kh.soDienThoai}
+                      </td>
+                      <td className="p-4 border border-orange-400">
+                        {kh.gioiTinh}
+                      </td>
+                      <td className="p-4 text-center border border-orange-400">
+                        {kh.diaChi}
+                      </td>
+                      <td className="p-4 border border-orange-400">
+                        <button title="Sửa" className="hover:scale-125 transition-transform">✏️</button>
+                      </td>
+                      <td className="p-4 border border-orange-400">
+                        <button title="Xóa" className="hover:scale-125 transition-transform">🗑️</button>
+                      </td>
+                      <td className="p-4 border border-orange-400">
+                        <button
+                          title="Xem chi tiết xe"
+                          className="hover:scale-125 transition-transform"
+                          onClick={() => {
+                            setSelected({
+                              loaiXe: "Ô tô",
+                              bienSo: "30H-123.45",
+                              maKH: kh.maKhachHang,
+                              tenKH: kh.hoTen
+                            });
+                            setOpen(true);
+                          }}
+                        >
+                          👁️
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+          )}
+        </div>
+
+        {/* PHÂN TRANG */}
+        {!loading && totalPages >= 1 && (
+          <div className="flex justify-between items-center gap-4 mt-8 pb-10">
+            <button
+              disabled={currentPage === 1}
+              onClick={() => setCurrentPage(prev => prev - 1)}
+              className="px-4 py-2 bg-orange-400 border border-orange-400 rounded shadow-sm text-white font-medium transition-all duration-300 hover:bg-orange-600 hover:border-orange-600 hover:shadow-md active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-yellow-400 disabled:active:scale-100"
+            >
+              Trình trước
+            </button>
+
+            <div className="flex items-center bg-orange-500 text-white px-5 py-2 rounded-full shadow-inner font-bold border-2 border-orange-400">
+              Trang {currentPage} / {totalPages}
+            </div>
+
+            <button
+              disabled={currentPage === totalPages}
+              onClick={() => setCurrentPage(prev => prev + 1)}
+              className="px-4 py-2 bg-orange-400 border border-orange-400 rounded shadow-sm text-white font-medium transition-all duration-300 hover:bg-orange-600 hover:border-orange-600 hover:shadow-md active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-yellow-400 disabled:active:scale-100"
+            >
+              Kế tiếp
+            </button>
+          </div>
+        )}
+
+        {/* MODAL */}
+        {open && selected && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+            <div className="bg-white rounded-xl p-6 max-w-md w-full shadow-2xl">
+              <h2 className="text-2xl font-bold text-orange-600 mb-4 border-b pb-2">
+                Thông Tin Phương Tiện
+              </h2>
+
+              <p><b>Khách hàng:</b> {selected.tenKH}</p>
+              <p><b>Mã KH:</b> {selected.maKH}</p>
+              <p><b>Loại xe:</b> {selected.loaiXe}</p>
+              <p><b>Biển số:</b> {selected.bienSo}</p>
+
+              <button
+                onClick={() => setOpen(false)}
+                className="mt-6 w-full bg-orange-500 text-white py-2 rounded-lg font-bold hover:bg-orange-600"
+              >
+                Đóng
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
 };
 
 export default ListKH;

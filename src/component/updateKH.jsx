@@ -4,7 +4,7 @@ import axios from "axios";
 import Header from "./header";
 
 const UpdateKH = () => {
-  const { maKH } = useParams(); // lấy mã KH từ URL
+  const { maKH } = useParams();
   const navigate = useNavigate();
 
   const [khachHang, setKhachHang] = useState({
@@ -15,7 +15,9 @@ const UpdateKH = () => {
     diaChi: "",
   });
 
-  // ===== LOAD THÔNG TIN KHÁCH HÀNG =====
+  const [success, setSuccess] = useState(false);
+
+  // ===== LOAD KH =====
   useEffect(() => {
     const fetchKH = async () => {
       try {
@@ -41,7 +43,7 @@ const UpdateKH = () => {
     fetchKH();
   }, [maKH]);
 
-  // ===== SUBMIT UPDATE =====
+  // ===== UPDATE =====
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -53,16 +55,14 @@ const UpdateKH = () => {
       diaChi: khachHang.diaChi,
     };
 
-    console.log("Payload update:", payload);
-
     try {
       await axios.put(
         `http://localhost:8080/api/khach-hang/${maKH}`,
         payload
       );
 
-      alert("Cập nhật khách hàng thành công!");
-      navigate("/listKH");
+      // ✅ HIỂN THỊ MOCKUP
+      setSuccess(true);
     } catch (error) {
       console.error("Lỗi cập nhật:", error);
       alert("Cập nhật thất bại!");
@@ -71,14 +71,47 @@ const UpdateKH = () => {
 
   return (
     <div>
+      {/* ===== MOCKUP THÀNH CÔNG ===== */}
+      {success && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl shadow-xl p-8 w-[420px] text-center animate-scaleIn">
+            <div className="text-green-500 text-5xl mb-4">✔️</div>
 
+            <h3 className="text-2xl font-bold text-gray-700 mb-2">
+              Cập nhật thành công!
+            </h3>
+
+            <p className="text-gray-500 mb-6">
+              Thông tin khách hàng đã được cập nhật
+            </p>
+
+            <div className="flex justify-center gap-4">
+              <button
+                onClick={() => navigate("/listKH")}
+                className="px-6 py-2 bg-orange-600 text-white rounded-lg hover:scale-105 transition"
+              >
+                Danh sách KH
+              </button>
+
+              <button
+                onClick={() => setSuccess(false)}
+                className="px-6 py-2 bg-gray-400 text-white rounded-lg hover:scale-105 transition"
+              >
+                Đóng
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ===== FORM ===== */}
       <div
-        className="min-h-screen bg-gray-100 flex items-center justify-center p-8"
+        className="min-h-screen flex items-center justify-center p-8"
         style={{
           backgroundImage: "url('/img/oto2.jpg')",
           backgroundSize: "cover",
           backgroundRepeat: "no-repeat",
-          backgroundPosition: "center"
+          backgroundPosition: "center",
         }}
       >
         <div className="bg-white shadow-lg rounded-lg p-8 w-full max-w-[700px]">
@@ -87,7 +120,6 @@ const UpdateKH = () => {
           </h2>
 
           <form className="flex flex-col gap-6" onSubmit={handleSubmit}>
-            {/* ===== THÔNG TIN KH ===== */}
             <div>
               <h3 className="text-xl font-semibold text-gray-700 mb-3">
                 Thông tin khách hàng
@@ -96,7 +128,6 @@ const UpdateKH = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <input
                   type="text"
-                  placeholder="Mã khách hàng"
                   value={khachHang.maKH}
                   disabled
                   className="border border-amber-400 rounded px-3 py-2 w-full bg-gray-100"
@@ -104,7 +135,6 @@ const UpdateKH = () => {
 
                 <input
                   type="text"
-                  placeholder="Tên khách hàng"
                   value={khachHang.tenKH}
                   onChange={(e) =>
                     setKhachHang({ ...khachHang, tenKH: e.target.value })
@@ -128,7 +158,6 @@ const UpdateKH = () => {
 
                 <input
                   type="text"
-                  placeholder="Số điện thoại"
                   value={khachHang.sdt}
                   onChange={(e) =>
                     setKhachHang({ ...khachHang, sdt: e.target.value })
@@ -151,18 +180,14 @@ const UpdateKH = () => {
                   <option>Hải Phòng</option>
                   <option>Đà Nẵng</option>
                   <option>Cần Thơ</option>
-                  <option>Bắc Giang</option>
-                  <option>Bắc Ninh</option>
-                  <option>Lâm Đồng</option>
                 </select>
               </div>
             </div>
 
-            {/* ===== BUTTON ===== */}
             <div className="flex justify-between">
               <button
                 type="submit"
-                className="mt-3 w-44 bg-orange-600 text-white py-3 rounded-lg
+                className="w-44 bg-orange-600 text-white py-3 rounded-lg
                            hover:bg-green-600 hover:scale-105 transition font-semibold"
               >
                 Cập nhật
@@ -171,7 +196,7 @@ const UpdateKH = () => {
               <button
                 type="button"
                 onClick={() => navigate("/listKH")}
-                className="mt-3 w-32 bg-orange-600 text-white py-3 rounded-lg
+                className="w-32 bg-orange-600 text-white py-3 rounded-lg
                            hover:bg-yellow-400 hover:scale-105 transition font-semibold"
               >
                 Quay lại

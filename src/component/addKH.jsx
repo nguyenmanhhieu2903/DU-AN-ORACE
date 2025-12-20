@@ -10,10 +10,11 @@ const AddKH = () => {
     diaChi: "",
   });
 
+  const [success, setSuccess] = useState(false);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // ===== DỮ LIỆU GỬI LÊN API =====
     const payload = {
       maKhachHang: khachHang.maKH,
       hoTen: khachHang.tenKH,
@@ -22,15 +23,11 @@ const AddKH = () => {
       diaChi: khachHang.diaChi,
     };
 
-    console.log("Payload gửi API:", payload);
-
     try {
-      await axios.post(
-        "http://localhost:8080/api/khach-hang",
-        payload
-      );
+      await axios.post("http://localhost:8080/api/khach-hang", payload);
 
-      alert("Thêm khách hàng thành công!");
+      // ✅ HIỂN THỊ MOCKUP
+      setSuccess(true);
 
       // Reset form
       setKhachHang({
@@ -48,21 +45,52 @@ const AddKH = () => {
 
   return (
     <div
-      className="min-h-screen bg-gray-100 flex items-center justify-center p-8"
+      className="min-h-screen flex items-center justify-center p-8"
       style={{
         backgroundImage: "url('/img/oto2.jpg')",
         backgroundSize: "cover",
         backgroundRepeat: "no-repeat",
-        backgroundPosition: "center"
+        backgroundPosition: "center",
       }}
     >
+      {/* ===== MOCKUP THÀNH CÔNG ===== */}
+      {success && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl shadow-xl p-8 w-[400px] text-center animate-scaleIn">
+            <div className="text-green-500 text-5xl mb-4">✔️</div>
+            <h3 className="text-2xl font-bold text-gray-700 mb-2">
+              Thêm thành công!
+            </h3>
+            <p className="text-gray-500 mb-6">
+              Khách hàng đã được lưu vào hệ thống
+            </p>
+
+            <div className="flex justify-center gap-4">
+              <button
+                onClick={() => setSuccess(false)}
+                className="px-5 py-2 bg-green-600 text-white rounded-lg hover:scale-105 transition"
+              >
+                Thêm tiếp
+              </button>
+
+              <a
+                href="/listKH"
+                className="px-5 py-2 bg-orange-600 text-white rounded-lg hover:scale-105 transition"
+              >
+                Danh sách
+              </a>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ===== FORM ===== */}
       <div className="bg-white shadow-lg rounded-lg p-8 w-full max-w-[700px]">
         <h2 className="text-3xl font-bold mb-6 text-orange-600 text-center">
           Thêm Khách Hàng
         </h2>
 
         <form className="flex flex-col gap-6" onSubmit={handleSubmit}>
-          {/* ===== THÔNG TIN KHÁCH HÀNG ===== */}
           <div>
             <h3 className="text-xl font-semibold text-gray-700 mb-3">
               Thông tin khách hàng
@@ -129,23 +157,14 @@ const AddKH = () => {
                 <option>Hải Phòng</option>
                 <option>Đà Nẵng</option>
                 <option>Cần Thơ</option>
-                <option>Bắc Giang</option>
-                <option>Bắc Kạn</option>
-                <option>Bạc Liêu</option>
-                <option>Bắc Ninh</option>
-                <option>Lai Châu</option>
-                <option>Lâm Đồng</option>
-                <option>Lạng Sơn</option>
               </select>
             </div>
           </div>
 
-          {/* ===== BUTTON ===== */}
           <div className="flex justify-between">
             <button
               type="submit"
-              className="mt-3 w-44 flex items-center justify-center gap-2 
-                         bg-orange-600 text-white py-3 rounded-lg
+              className="w-44 bg-orange-600 text-white py-3 rounded-lg
                          hover:bg-green-600 hover:scale-105 transition font-semibold"
             >
               Thêm khách hàng
@@ -153,7 +172,7 @@ const AddKH = () => {
 
             <a
               href="/listKH"
-              className="mt-3 w-32 block text-center bg-orange-600 text-white py-3 rounded-lg 
+              className="w-32 text-center bg-orange-600 text-white py-3 rounded-lg 
                          hover:bg-yellow-400 hover:scale-105 transition font-semibold"
             >
               Quay Lại

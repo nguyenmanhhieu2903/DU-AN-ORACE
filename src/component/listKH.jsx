@@ -18,6 +18,8 @@ const ListKH = () => {
     address: ""
   });
 
+  const [deleteSuccess, setDeleteSuccess] = useState(false);
+
   const fetchCustomers = useCallback(async () => {
     try {
       setLoading(true);
@@ -42,27 +44,32 @@ const ListKH = () => {
 
   // 2. SỬA HÀM XÓA
   const handleDelete = async (maKH) => {
-    if (!maKH) {
-      alert("Mã khách hàng không hợp lệ!");
-      return;
-    }
+  if (!maKH) {
+    alert("Mã khách hàng không hợp lệ!");
+    return;
+  }
 
-    const confirmDelete = window.confirm("Bạn có chắc chắn muốn xóa khách hàng này không?");
-    if (!confirmDelete) return;
+  const confirmDelete = window.confirm(
+    "Bạn có chắc chắn muốn xóa khách hàng này không?"
+  );
+  if (!confirmDelete) return;
 
-    try {
-      // Lưu ý: Kiểm tra Backend dùng PUT hay DELETE. Ở đây giữ PUT theo code của bạn.
-      await axios.delete(`http://localhost:8080/api/khach-hang/${maKH}`);
-      
-      alert("Xóa khách hàng thành công!");
-      
-      // GỌI LẠI HÀM FETCH ĐỂ CẬP NHẬT GIAO DIỆN
-      await fetchCustomers(); 
-    } catch (error) {
-      console.error("Lỗi xóa khách hàng:", error);
-      alert("Xóa khách hàng thất bại! Vui lòng kiểm tra lại phía Server.");
-    }
-  };
+  try {
+    await axios.delete(
+      `http://localhost:8080/api/khach-hang/${maKH}`
+    );
+
+    // ✅ Reload lại danh sách khách hàng
+    await fetchCustomers();
+
+    // ✅ HIỂN THỊ MOCKUP XÓA THÀNH CÔNG
+    setDeleteSuccess(true);
+
+  } catch (error) {
+    console.error("Lỗi xóa khách hàng:", error);
+    alert("Xóa khách hàng thất bại! Vui lòng kiểm tra Server.");
+  }
+};
 
   // ----- FILTER --------
   const filtered = customers.filter(c =>
@@ -332,6 +339,35 @@ const ListKH = () => {
             + Thêm Khách Hàng
           </a>
         </div>
+        {/* ===== MOCKUP XÓA THÀNH CÔNG ===== */}
+        {deleteSuccess && (
+          <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+            <div className="bg-white rounded-xl shadow-xl p-8 w-[420px] text-center animate-scaleIn">
+              <div className="text-green-500 text-5xl mb-4">✔️</div>
+
+              <h3 className="text-2xl font-bold text-gray-700 mb-2">
+                Xóa khách hàng thành công!
+              </h3>
+
+              <p className="text-gray-500 mb-6">
+                Khách hàng đã được xóa khỏi hệ thống
+              </p>
+
+              <button
+                onClick={() => setDeleteSuccess(false)}
+                className="
+                  px-6 py-3 
+                  bg-orange-600 text-white font-semibold 
+                  rounded-lg shadow-md
+                  hover:bg-orange-700 hover:scale-105
+                  transition
+                "
+              >
+                Đóng
+              </button>
+            </div>
+          </div>
+)}
       </div>
     </div>
   );

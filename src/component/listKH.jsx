@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Header from "./header";
 import axios from "axios";
 
@@ -18,39 +18,51 @@ const ListKH = () => {
     address: ""
   });
 
-  useEffect(() => {
-  const fetchCustomers = async () => {
+  const fetchCustomers = useCallback(async () => {
     try {
       setLoading(true);
-
-      const response = await axios.get(
-        "http://localhost:8080/api/khach-hang"
-      );
-
-      // ✅ KIỂM TRA TOÀN BỘ RESPONSE
-      console.log("API response:", response);
-
-      // ✅ KIỂM TRA DỮ LIỆU TRẢ VỀ
-      console.log("Danh sách khách hàng:", response.data);
-
-      const activeCustomers = response.data.filter(
-        c => c.DELETE_FLAG !== 1
-      );
-
-      // ✅ KIỂM TRA SAU KHI FILTER
-      console.log("Khách hàng còn hiệu lực:", activeCustomers);
-
-      setCustomers(activeCustomers);
+      const response = await axios.get("http://localhost:8080/api/khach-hang");
+      
+      // Kiểm tra nếu response.data là mảng mới filter
+      if (Array.isArray(response.data)) {
+        const activeCustomers = response.data.filter(c => c.DELETE_FLAG !== 1);
+        setCustomers(activeCustomers);
+      }
     } catch (err) {
       setError("Không thể kết nối đến máy chủ API.");
       console.error("API Error:", err);
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  fetchCustomers();
-}, []);
+  useEffect(() => {
+    fetchCustomers();
+  }, [fetchCustomers]);
+
+  // 2. SỬA HÀM XÓA
+  const handleDelete = async (maKH) => {
+    if (!maKH) {
+      alert("Mã khách hàng không hợp lệ!");
+      return;
+    }
+
+    const confirmDelete = window.confirm("Bạn có chắc chắn muốn xóa khách hàng này không?");
+    if (!confirmDelete) return;
+
+    try {
+      // Lưu ý: Kiểm tra Backend dùng PUT hay DELETE. Ở đây giữ PUT theo code của bạn.
+      await axios.delete(`http://localhost:8080/api/khach-hang/${maKH}`);
+      
+      alert("Xóa khách hàng thành công!");
+      
+      // GỌI LẠI HÀM FETCH ĐỂ CẬP NHẬT GIAO DIỆN
+      await fetchCustomers(); 
+    } catch (error) {
+      console.error("Lỗi xóa khách hàng:", error);
+      alert("Xóa khách hàng thất bại! Vui lòng kiểm tra lại phía Server.");
+    }
+  };
 
   // ----- FILTER --------
   const filtered = customers.filter(c =>
@@ -91,11 +103,11 @@ const ListKH = () => {
               </label>
               <input
                 type="text"
-                className="w-full border border-gray-300 rounded px-3 py-2 mt-1 focus:ring-2 focus:ring-orange-400 outline-none"
+                className="w-full border border-orange-400 rounded px-3 py-2 mt-1 focus:ring-2 focus:ring-orange-400 outline-none"
                 placeholder="Nhập họ tên..."
                 value={search.name}
                 onChange={e =>
-                  handleSearchChange("name", e.target.value)
+                  handleSearchChange("name", e.target.value) 
                 }
               />
             </div>
@@ -106,7 +118,7 @@ const ListKH = () => {
               </label>
               <input
                 type="text"
-                className="w-full border border-gray-300 rounded px-3 py-2 mt-1 focus:ring-2 focus:ring-orange-400 outline-none"
+                className="w-full border border-orange-400 rounded px-3 py-2 mt-1 focus:ring-2 focus:ring-orange-400 outline-none"
                 placeholder="Nhập SĐT..."
                 value={search.phone}
                 onChange={e =>
@@ -120,7 +132,7 @@ const ListKH = () => {
                 Địa chỉ:
               </label>
               <select
-                className="w-full border border-gray-300 rounded px-3 py-2 mt-1 focus:ring-2 focus:ring-orange-400 outline-none"
+                className="w-full border border-orange-400 rounded px-3 py-2 mt-1 focus:ring-2 focus:ring-orange-400 outline-none"
                 value={search.address}
                 onChange={e =>
                   handleSearchChange("address", e.target.value)
@@ -217,10 +229,20 @@ const ListKH = () => {
                         {kh.diaChi}
                       </td>
                       <td className="p-4 border border-orange-400">
-                        <button title="Sửa" className="hover:scale-125 transition-transform">✏️</button>
+                        <a href={`/updateKH/${kh.maKhachHang}`} title="Sửa">
+                          <span className="inline-block hover:scale-125 transition-transform duration-300">
+                            ✏️
+                          </span>
+                        </a>
                       </td>
                       <td className="p-4 border border-orange-400">
-                        <button title="Xóa" className="hover:scale-125 transition-transform">🗑️</button>
+                        <button
+                          title="Xóa"
+                          className="hover:scale-125 transition-transform"
+                          onClick={() => handleDelete(kh.maKhachHang)}
+                        >
+                          🗑️
+                        </button>
                       </td>
                       <td className="p-4 border border-orange-400">
                         <button
@@ -295,6 +317,21 @@ const ListKH = () => {
             </div>
           </div>
         )}
+        <div className="flex">
+          <a
+            href="/addKH"
+            className="
+              px-6 py-3 
+              bg-orange-500 text-white font-semibold 
+              rounded-lg shadow-md
+              transition-all duration-300
+              hover:bg-orange-600 hover:scale-110
+              active:scale-95
+            "
+          >
+            + Thêm Khách Hàng
+          </a>
+        </div>
       </div>
     </div>
   );

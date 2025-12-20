@@ -8,6 +8,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import ListKH from './component/listKH.jsx'
 import AddKH from './component/addKH.jsx'
 import TicketList from './component/ticketlist.jsx'
+import UpdateKH from './component/updateKH.jsx'
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
         <Route path="/listKH" element={<ListKH />} />
         <Route path="/addKH" element={<AddKH />} />
         <Route path="/ticketlist" element={<TicketList />} />
+        <Route path="/updateKH/:maKH" element={<UpdateKH />} />
       </Routes>
     </Router>
   );

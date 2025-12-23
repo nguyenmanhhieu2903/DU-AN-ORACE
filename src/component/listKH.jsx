@@ -11,6 +11,8 @@ const ListKH = () => {
   const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState(null);
 
+  const [xeList, setXeList] = useState([]);
+
   // ----- STATE TÌM KIẾM --------
   const [search, setSearch] = useState({
     name: "",
@@ -20,6 +22,20 @@ const ListKH = () => {
 
   const [deleteSuccess, setDeleteSuccess] = useState(false);
 
+  // --- ĐỊNH NGHĨA HÀM TRƯỚC ---
+const fetchXe = useCallback(async () => {
+  try {
+    const response = await axios.get("http://localhost:8080/api/xe");
+    if (Array.isArray(response.data)) {
+      const activeXe = response.data.filter(xe => (xe.deleteFlag ?? xe.DELETE_FLAG) !== 1);
+      setXeList(activeXe);
+    }
+  } catch (err) {
+    console.error("API Xe Error:", err);
+  }
+}, []);
+
+  // 1. CẬP NHẬT HÀM LẤY DỮ LIỆU KHÁCH HÀNG
   const fetchCustomers = useCallback(async () => {
     try {
       setLoading(true);
@@ -38,9 +54,11 @@ const ListKH = () => {
     }
   }, []);
 
-  useEffect(() => {
-    fetchCustomers();
-  }, [fetchCustomers]);
+  // --- GỌI TRONG USEEFFECT SAU CÙNG ---
+useEffect(() => {
+  fetchCustomers();
+  fetchXe();
+}, [fetchCustomers, fetchXe]);
 
   // 2. SỬA HÀM XÓA
   const handleDelete = async (maKH) => {
@@ -221,7 +239,7 @@ const ListKH = () => {
                     >
                       {/* Thêm border border-orange-500 vào từng ô td */}
                       <td className="p-4 font-medium text-gray-900 border border-orange-400">
-                        {kh.maKhachHang}
+                        {kh.maKhachHang.substring(0, 8).toUpperCase()}
                       </td>
                       <td className="p-4 text-center border border-orange-400">
                         {kh.hoTen}
@@ -256,14 +274,38 @@ const ListKH = () => {
                           title="Xem chi tiết xe"
                           className="hover:scale-125 transition-transform"
                           onClick={() => {
+                          // 1. Lọc xe ngay lập tức dựa trên dữ liệu khách hàng (kh) đang được map
+                          const xeTheoKH = xeList.filter(xe => {
+                            // Truy cập vào khachHang theo Entity Java (chữ k thường)
+                            const maKhTrongXe = xe?.khachHang?.maKhachHang || xe?.maKhachHang || xe?.makhachhang;
+                            const maKhHienTai = kh?.maKhachHang;
+                            
+                            return String(maKhTrongXe || "").trim() === String(maKhHienTai || "").trim();
+                          });
+
+                          console.log("🚗 Danh sách xe tìm thấy cho " + kh.maKhachHang + ":", xeTheoKH);
+
+                          // 2. Cập nhật dữ liệu vào state selected để hiển thị lên Modal
+                          if (xeTheoKH.length > 0) {
+                            const xeInfo = xeTheoKH[0];
                             setSelected({
-                              loaiXe: "Ô tô",
-                              bienSo: "30H-123.45",
+                              loaiXe: xeInfo.tenXe || xeInfo.tenxe || "Không rõ loại xe",
+                              bienSo: xeInfo.bienSo || xeInfo.bienso || "Không biển số",
                               maKH: kh.maKhachHang,
                               tenKH: kh.hoTen
                             });
-                            setOpen(true);
-                          }}
+                          } else {
+                            setSelected({
+                              loaiXe: "N/A",
+                              bienSo: "N/A",
+                              maKH: kh.maKhachHang,
+                              tenKH: kh.hoTen,
+                            });
+                          }
+
+                          setOpen(true);
+                        }}
+
                         >
                           👁️
                         </button>
@@ -283,7 +325,7 @@ const ListKH = () => {
             <button
               disabled={currentPage === 1}
               onClick={() => setCurrentPage(prev => prev - 1)}
-              className="px-4 py-2 bg-orange-400 border border-orange-400 rounded shadow-sm text-white font-medium transition-all duration-300 hover:bg-orange-600 hover:border-orange-600 hover:shadow-md active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-yellow-400 disabled:active:scale-100"
+              className="px-4 py-2 bg-orange-400 border border-orange-400 rounded-xl shadow-sm text-white font-medium transition-all duration-300 hover:bg-orange-600 hover:border-orange-600 hover:shadow-md active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-yellow-400 disabled:active:scale-100"
             >
               Trình trước
             </button>
@@ -295,7 +337,7 @@ const ListKH = () => {
             <button
               disabled={currentPage === totalPages}
               onClick={() => setCurrentPage(prev => prev + 1)}
-              className="px-4 py-2 bg-orange-400 border border-orange-400 rounded shadow-sm text-white font-medium transition-all duration-300 hover:bg-orange-600 hover:border-orange-600 hover:shadow-md active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-yellow-400 disabled:active:scale-100"
+              className="px-4 py-2  bg-orange-400 border border-orange-400 rounded-xl shadow-sm text-white font-medium transition-all duration-300 hover:bg-orange-600 hover:border-orange-600 hover:shadow-md active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-yellow-400 disabled:active:scale-100"
             >
               Kế tiếp
             </button>
@@ -332,7 +374,7 @@ const ListKH = () => {
               bg-orange-500 text-white font-semibold 
               rounded-lg shadow-md
               transition-all duration-300
-              hover:bg-orange-600 hover:scale-110
+              hover:bg-green-600 hover:scale-110
               active:scale-95
             "
           >

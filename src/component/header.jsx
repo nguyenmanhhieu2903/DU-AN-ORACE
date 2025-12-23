@@ -49,7 +49,7 @@ const Header = () =>{
                                 after:transition-all after:duration-300
                                 hover:after:w-full hover:text-fuchsia-500"
                         >
-                            Vé
+                            Quản Lý Hóa Đơn
                         </a>
                         <a
                             href="/listKH"

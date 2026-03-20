@@ -1,183 +1,209 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import axios from "axios";
 
 const AddKH = () => {
+  const location = useLocation();
+
   const [khachHang, setKhachHang] = useState({
     maKH: "",
     tenKH: "",
     gioiTinh: "",
     sdt: "",
     diaChi: "",
+    bienSo: "",
   });
 
+  const [file, setFile] = useState(null);
+  const [preview, setPreview] = useState(null);
   const [success, setSuccess] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (location.state) {
+      setKhachHang((prev) => ({
+        ...prev,
+        bienSo: location.state.bienSo || "",
+      }));
+      setPreview(location.state.image || null);
+    }
+  }, [location.state]);
+
+  const handleFileChange = (e) => {
+    const f = e.target.files[0];
+    if (f) {
+      setFile(f);
+      setPreview(URL.createObjectURL(f));
+    }
+  };
+
+  const handleScanPlate = async () => {
+    if (!file) {
+      alert("Chọn ảnh trước!");
+      return;
+    }
+    setLoading(true);
+    try {
+      const formData = new FormData();
+      formData.append("image", file);
+      const res = await axios.post("http://localhost:5000/scan", formData);
+      setKhachHang({ ...khachHang, bienSo: res.data.plate });
+    } catch {
+      alert("Lỗi nhận diện biển số!");
+    }
+    setLoading(false);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     const payload = {
       maKhachHang: khachHang.maKH,
       hoTen: khachHang.tenKH,
       gioiTinh: khachHang.gioiTinh,
       soDienThoai: khachHang.sdt,
       diaChi: khachHang.diaChi,
+      bienSo: khachHang.bienSo,
+      maQR: khachHang.maQR,
     };
 
     try {
       await axios.post("http://localhost:8080/api/khach-hang", payload);
-
-      // ✅ HIỂN THỊ MOCKUP
       setSuccess(true);
-
-      // Reset form
       setKhachHang({
-        maKH: "",
-        tenKH: "",
-        gioiTinh: "",
-        sdt: "",
-        diaChi: "",
+        maKH: "", tenKH: "", gioiTinh: "", sdt: "", diaChi: "", bienSo: "",
       });
-    } catch (error) {
-      console.error("Lỗi thêm khách hàng:", error);
-      alert("Thêm khách hàng thất bại!");
+      setPreview(null);
+      setFile(null);
+    } catch {
+      alert("Thêm thất bại!");
     }
   };
 
   return (
-    <div
-      className="min-h-screen flex items-center justify-center p-8"
-      style={{
-        backgroundImage: "url('/img/oto2.jpg')",
-        backgroundSize: "cover",
-        backgroundRepeat: "no-repeat",
-        backgroundPosition: "center",
-      }}
-    >
-      {/* ===== MOCKUP THÀNH CÔNG ===== */}
+    <div className="min-h-screen flex items-center justify-center p-8 bg-gradient-to-br from-orange-200 via-orange-100 to-yellow-100">
+      {/* SUCCESS MODAL */}
       {success && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-          <div className="bg-white rounded-xl shadow-xl p-8 w-[400px] text-center animate-scaleIn">
-            <div className="text-green-500 text-5xl mb-4">✔️</div>
-            <h3 className="text-2xl font-bold text-gray-700 mb-2">
-              Thêm thành công!
-            </h3>
-            <p className="text-gray-500 mb-6">
-              Khách hàng đã được lưu vào hệ thống
-            </p>
-
-            <div className="flex justify-center gap-4">
-              <button
-                onClick={() => setSuccess(false)}
-                className="px-5 py-2 bg-green-600 text-white rounded-lg hover:scale-105 transition"
-              >
-                Thêm tiếp
-              </button>
-
-              <a
-                href="/listKH"
-                className="px-5 py-2 bg-orange-600 text-white rounded-lg hover:scale-105 transition"
-              >
-                Danh sách
-              </a>
-            </div>
+          <div className="bg-white p-6 rounded-2xl text-center shadow-2xl animate-scaleIn">
+            <h2 className="text-green-600 text-xl font-bold">✔ Thành công</h2>
+            <button
+              onClick={() => setSuccess(false)}
+              className="mt-3 bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg transition hover:scale-105"
+            >
+              OK
+            </button>
           </div>
         </div>
       )}
 
-      {/* ===== FORM ===== */}
-      <div className="bg-white shadow-lg rounded-lg p-8 w-full max-w-[700px]">
-        <h2 className="text-3xl font-bold mb-6 text-orange-600 text-center">
-          Thêm Khách Hàng
+      <div className="bg-white/80 backdrop-blur-md shadow-2xl rounded-3xl p-8 w-[700px] transition hover:scale-[1.01]">
+        <h2 className="text-3xl font-bold text-orange-600 text-center mb-6 flex items-center justify-center gap-2">
+          🚗 Thêm khách hàng
         </h2>
 
-        <form className="flex flex-col gap-6" onSubmit={handleSubmit}>
-          <div>
-            <h3 className="text-xl font-semibold text-gray-700 mb-3">
-              Thông tin khách hàng
-            </h3>
+        <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+          <input
+            placeholder="Mã KH TỰ ĐỘNG"
+            value={khachHang.maKH}
+            onChange={(e) => setKhachHang({ ...khachHang, maKH: e.target.value })}
+            className="input-cam border p-2 rounded-lg"
+          />
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <input
-                type="text"
-                placeholder="Mã khách hàng"
-                value={khachHang.maKH}
-                onChange={(e) =>
-                  setKhachHang({ ...khachHang, maKH: e.target.value })
-                }
-                className="border border-amber-400 rounded px-3 py-2 w-full"
-                required
+          <input
+            placeholder="Tên KH"
+            value={khachHang.tenKH}
+            onChange={(e) => setKhachHang({ ...khachHang, tenKH: e.target.value })}
+            className="input-cam border p-2 rounded-lg"
+          />
+
+          <input
+            placeholder="SĐT"
+            value={khachHang.sdt}
+            onChange={(e) => setKhachHang({ ...khachHang, sdt: e.target.value })}
+            className="input-cam border p-2 rounded-lg"
+          />
+
+          <input
+            placeholder="Địa chỉ"
+            value={khachHang.diaChi}
+            onChange={(e) => setKhachHang({ ...khachHang, diaChi: e.target.value })}
+            className="input-cam border p-2 rounded-lg"
+          />
+
+          {/* ===== BIỂN SỐ & UPLOAD ===== */}
+          <div className="border-2 border-orange-300 p-4 rounded-xl bg-orange-50/50 hover:shadow-md transition">
+            <p className="font-semibold text-orange-600 mb-2">📷 Nhận diện biển số</p>
+            
+            {khachHang.bienSo && (
+              <p className="text-green-600 text-sm mb-2">✔ Đã nhận diện: {khachHang.bienSo}</p>
+            )}
+
+            <div className="flex flex-col gap-3">
+              {/* Input file ẩn hoàn toàn */}
+              <input 
+                type="file" 
+                id="file-upload" 
+                onChange={handleFileChange} 
+                className="hidden" 
               />
+              
+              <div className="flex gap-2">
+                {/* 1. NÚT CHỌN ẢNH: Chỉ hiện khi CHƯA có file */}
+                {!file && (
+                  <label 
+                    htmlFor="file-upload" 
+                    className="cursor-pointer bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600 transition text-sm shadow-md flex items-center gap-2"
+                  >
+                    <span>📁 Chọn ảnh biển số</span>
+                  </label>
+                )}
+
+                {/* 2. NÚT QUÉT ẢNH: Chỉ hiện khi ĐÃ CÓ file và CHƯA quét xong biển số */}
+                {file && !khachHang.bienSo && (
+                  <button
+                    type="button"
+                    onClick={handleScanPlate}
+                    className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition text-sm shadow-md"
+                  >
+                    {loading ? "Đang quét..." : "🔍 Bắt đầu nhận diện"}
+                  </button>
+                )}
+
+                {/* 3. NÚT CHỌN LẠI: Hiện khi đã có file (để người dùng đổi ảnh nếu chọn nhầm) */}
+                {file && (
+                  <button
+                    type="button"
+                    onClick={() => { setFile(null); setPreview(null); }}
+                    className="bg-gray-400 text-white px-3 py-2 rounded-lg hover:bg-gray-500 transition text-xs shadow-sm"
+                  >
+                    ✕ Hủy ảnh
+                  </button>
+                )}
+              </div>
+
+              {/* Hiển thị ảnh đã chọn */}
+              {preview && (
+                <div className="relative mt-2 w-fit">
+                  <img 
+                    src={preview} 
+                    alt="Preview" 
+                    className="h-32 rounded-lg border-2 border-orange-200 object-cover shadow-sm" 
+                  />
+                </div>
+              )}
 
               <input
-                type="text"
-                placeholder="Tên khách hàng"
-                value={khachHang.tenKH}
-                onChange={(e) =>
-                  setKhachHang({ ...khachHang, tenKH: e.target.value })
-                }
-                className="border border-amber-400 rounded px-3 py-2 w-full"
-                required
+                placeholder="Biển số"
+                value={khachHang.bienSo}
+                onChange={(e) => setKhachHang({ ...khachHang, bienSo: e.target.value })}
+                className="input-cam border p-2 rounded-lg w-full"
               />
-
-              <select
-                value={khachHang.gioiTinh}
-                onChange={(e) =>
-                  setKhachHang({ ...khachHang, gioiTinh: e.target.value })
-                }
-                className="border border-amber-400 rounded px-3 py-2 w-full"
-                required
-              >
-                <option value="">Giới tính</option>
-                <option value="Nam">Nam</option>
-                <option value="Nữ">Nữ</option>
-              </select>
-
-              <input
-                type="text"
-                placeholder="Số điện thoại"
-                value={khachHang.sdt}
-                onChange={(e) =>
-                  setKhachHang({ ...khachHang, sdt: e.target.value })
-                }
-                className="border border-amber-400 rounded px-3 py-2 w-full"
-                required
-              />
-
-              <select
-                value={khachHang.diaChi}
-                onChange={(e) =>
-                  setKhachHang({ ...khachHang, diaChi: e.target.value })
-                }
-                className="border border-amber-400 rounded px-3 py-2 w-full md:col-span-2"
-                required
-              >
-                <option value="">-- Chọn tỉnh/thành phố --</option>
-                <option>Hà Nội</option>
-                <option>TP Hồ Chí Minh</option>
-                <option>Hải Phòng</option>
-                <option>Đà Nẵng</option>
-                <option>Cần Thơ</option>
-              </select>
             </div>
           </div>
 
-          <div className="flex justify-between">
-            <button
-              type="submit"
-              className="w-44 bg-orange-600 text-white py-3 rounded-lg
-                         hover:bg-green-600 hover:scale-105 transition font-semibold"
-            >
-              Thêm khách hàng
-            </button>
-
-            <a
-              href="/listKH"
-              className="w-32 text-center bg-orange-600 text-white py-3 rounded-lg 
-                         hover:bg-yellow-400 hover:scale-105 transition font-semibold"
-            >
-              Quay Lại
-            </a>
-          </div>
+          <button type="submit" className="bg-gradient-to-r from-green-500 to-green-600 text-white py-3 rounded-xl hover:scale-105 transition font-semibold shadow-lg">
+            🚀 Thêm khách hàng
+          </button>
         </form>
       </div>
     </div>

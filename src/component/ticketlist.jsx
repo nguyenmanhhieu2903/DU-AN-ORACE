@@ -84,11 +84,11 @@ const TicketList = () => {
         <div className="bg-white shadow-md rounded-xl p-6 mb-8 border border-gray-200">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
-              <label className="font-semibold text-gray-700 ">Mã vé:</label>
+              <label className="font-semibold text-gray-700 ">Mã lịch sử dùng thẻ:</label>
               <input
                 type="text"
-                placeholder="Nhập mã vé"
-                className="border rounded px-3 py-2 w-full mt-1 border-orange-400"
+                placeholder="Nhập Mã lịch sử dùng thẻ"
+                className="border rounded px-3 py-2 w-full mt-1 border-orange-400 hover:border-orange-500 focus:border-orange-500 focus:outline-none"
                 value={search.code}
                 onChange={(e) => handleSearchChange("code", e.target.value)}
               />
@@ -99,7 +99,7 @@ const TicketList = () => {
               <input
                 type="text"
                 placeholder="Nhập biển số xe"
-                className="border rounded px-3 py-2 w-full mt-1 border-orange-400"
+                className="border rounded px-3 py-2 w-full mt-1 border-orange-400 hover:border-orange-500 focus:border-orange-500 focus:outline-none"
                 value={search.plate}
                 onChange={(e) => handleSearchChange("plate", e.target.value)}
               />
@@ -129,7 +129,7 @@ const TicketList = () => {
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-orange-500 border border-orange-400 text-white text-center">
-                <th className="p-3 border border-orange-400">Mã Hóa Đơn</th>
+                <th className="p-3 border border-orange-400">Mã lịch sử dùng thẻ</th>
                 <th className="p-3 border border-orange-400">Tên Khách Hàng</th>
                 <th className="p-3 border border-orange-400">Biển số xe</th>
                 <th className="p-3 border border-orange-400">Loại xe</th>

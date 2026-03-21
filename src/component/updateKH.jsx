@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
-import Header from "./header";
+import Header from "./home";
 
 const UpdateKH = () => {
   const { maKH } = useParams();

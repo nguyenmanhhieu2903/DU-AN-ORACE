@@ -1,5 +1,5 @@
-import { useState , useEffect} from "react";
-import Header from "./header";
+import { useState, useEffect } from "react";
+import Header from "./home";
 import axios from "axios";
 
 
@@ -9,7 +9,7 @@ const TicketList = () => {
   const [tickets, setTickets] = useState([]);
   const [loading, setLoading] = useState(true);
 
-   useEffect(() => {
+  useEffect(() => {
     axios
       .get("http://localhost:8080/api/hoa-don")
       .then((res) => {
@@ -18,7 +18,7 @@ const TicketList = () => {
         // ✅ Nếu backend trả Page
         if (res.data.content) {
           setTickets(res.data.content);
-        } 
+        }
         // ✅ Nếu backend trả List
         else {
           setTickets(res.data);
@@ -76,7 +76,6 @@ const TicketList = () => {
 
   return (
     <div>
-      <Header />
       <h1 className="text-4xl font-bold text-center mb-5">DANH SÁCH HÓA ĐƠN</h1>
 
       {/* Search */}
@@ -168,7 +167,7 @@ const TicketList = () => {
                     {/* <td className="p-3 border">
                       {t.maKhuVuc || " - - - "}
                     </td> */}
-  {/* Biển số xe: Trỏ vào lichSu -> xe -> bienSoXe */}
+                    {/* Biển số xe: Trỏ vào lichSu -> xe -> bienSoXe */}
                     <td className="p-3 border border-orange-400 font-bold">
                       {t.lichSu?.khachHang?.hoTen || "---"}
                     </td>
@@ -185,23 +184,23 @@ const TicketList = () => {
 
                     {/* Thời gian vào: lichSu -> thoiGianBatDau */}
                     <td className="p-3 border border-orange-400 text-sm">
-                      {t.lichSu?.thoiGianBatDau 
-                        ? new Date(t.lichSu.thoiGianBatDau).toLocaleString('vi-VN') 
+                      {t.lichSu?.thoiGianBatDau
+                        ? new Date(t.lichSu.thoiGianBatDau).toLocaleString('vi-VN')
                         : "—"}
                     </td>
 
                     {/* Thời gian ra: lichSu -> thoiGianKetThuc */}
                     <td className="p-3 border border-orange-400 text-sm">
-                      {t.lichSu?.thoiGianKetThuc 
-                        ? new Date(t.lichSu.thoiGianKetThuc).toLocaleString('vi-VN') 
+                      {t.lichSu?.thoiGianKetThuc
+                        ? new Date(t.lichSu.thoiGianKetThuc).toLocaleString('vi-VN')
                         : "—"}
                     </td>
-                     <td className="p-3 border border-orange-400 text-sm">
-                      {t.ngayThanhToan 
-                        ? new Date(t.ngayThanhToan).toLocaleString('vi-VN') 
+                    <td className="p-3 border border-orange-400 text-sm">
+                      {t.ngayThanhToan
+                        ? new Date(t.ngayThanhToan).toLocaleString('vi-VN')
                         : "—"}
                     </td>
-                      {/* Người thu */}
+                    {/* Người thu */}
                     <td className="p-3 border border-orange-400">
                       {t.nhanVien.hoTen !== undefined ? `${t.nhanVien.hoTen}` : "—"}
                     </td>
@@ -212,9 +211,8 @@ const TicketList = () => {
 
                     {/* Trạng thái: Dựa vào lichSu -> trangThaiSuDung */}
                     <td className="p-3 border border-orange-400">
-                      <span className={`px-2 py-1 rounded text-xs font-bold ${
-                        t.lichSu?.trangThaiSuDung === 'DA_RA' ? "bg-green-100 text-green-700" : "bg-blue-100 text-blue-700"
-                      }`}>
+                      <span className={`px-2 py-1 rounded text-xs font-bold ${t.lichSu?.trangThaiSuDung === 'DA_RA' ? "bg-green-100 text-green-700" : "bg-blue-100 text-blue-700"
+                        }`}>
                         {t.lichSu?.trangThaiSuDung === 'DA_RA' ? "Đã ra" : "Đang gửi"}
                       </span>
                     </td>
@@ -267,11 +265,10 @@ const TicketList = () => {
               <button
                 key={i}
                 onClick={() => goToPage(i + 1)}
-                className={`px-3 py-1 rounded-lg ${
-                  currentPage === i + 1
-                    ? "bg-orange-500 text-white"
-                    : "bg-gray-200 hover:bg-gray-300"
-                } transition`}
+                className={`px-3 py-1 rounded-lg ${currentPage === i + 1
+                  ? "bg-orange-500 text-white"
+                  : "bg-gray-200 hover:bg-gray-300"
+                  } transition`}
               >
                 {i + 1}
               </button>

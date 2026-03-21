@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
-import Header from "./header";
+import { useNavigate } from "react-router-dom";
+import Header from "./home";
 import axios from "axios";
 
 const ListKH = () => {
@@ -23,24 +24,24 @@ const ListKH = () => {
   const [deleteSuccess, setDeleteSuccess] = useState(false);
 
   // --- ĐỊNH NGHĨA HÀM TRƯỚC ---
-const fetchXe = useCallback(async () => {
-  try {
-    const response = await axios.get("http://localhost:8080/api/xe");
-    if (Array.isArray(response.data)) {
-      const activeXe = response.data.filter(xe => (xe.deleteFlag ?? xe.DELETE_FLAG) !== 1);
-      setXeList(activeXe);
+  const fetchXe = useCallback(async () => {
+    try {
+      const response = await axios.get("http://localhost:8080/api/xe");
+      if (Array.isArray(response.data)) {
+        const activeXe = response.data.filter(xe => (xe.deleteFlag ?? xe.DELETE_FLAG) !== 1);
+        setXeList(activeXe);
+      }
+    } catch (err) {
+      console.error("API Xe Error:", err);
     }
-  } catch (err) {
-    console.error("API Xe Error:", err);
-  }
-}, []);
+  }, []);
 
   // 1. CẬP NHẬT HÀM LẤY DỮ LIỆU KHÁCH HÀNG
   const fetchCustomers = useCallback(async () => {
     try {
       setLoading(true);
       const response = await axios.get("http://localhost:8080/api/khach-hang");
-      
+
       // Kiểm tra nếu response.data là mảng mới filter
       if (Array.isArray(response.data)) {
         const activeCustomers = response.data.filter(c => c.DELETE_FLAG !== 1);
@@ -55,46 +56,46 @@ const fetchXe = useCallback(async () => {
   }, []);
 
   // --- GỌI TRONG USEEFFECT SAU CÙNG ---
-useEffect(() => {
-  fetchCustomers();
-  fetchXe();
-}, [fetchCustomers, fetchXe]);
+  useEffect(() => {
+    fetchCustomers();
+    fetchXe();
+  }, [fetchCustomers, fetchXe]);
 
   // 2. SỬA HÀM XÓA
   const handleDelete = async (maKH) => {
-  if (!maKH) {
-    alert("Mã khách hàng không hợp lệ!");
-    return;
-  }
+    if (!maKH) {
+      alert("Mã khách hàng không hợp lệ!");
+      return;
+    }
 
-  const confirmDelete = window.confirm(
-    "Bạn có chắc chắn muốn xóa khách hàng này không?"
-  );
-  if (!confirmDelete) return;
-
-  try {
-    await axios.delete(
-      `http://localhost:8080/api/khach-hang/${maKH}`
+    const confirmDelete = window.confirm(
+      "Bạn có chắc chắn muốn xóa khách hàng này không?"
     );
+    if (!confirmDelete) return;
 
-    // ✅ Reload lại danh sách khách hàng
-    await fetchCustomers();
+    try {
+      await axios.delete(
+        `http://localhost:8080/api/khach-hang/${maKH}`
+      );
 
-    // ✅ HIỂN THỊ MOCKUP XÓA THÀNH CÔNG
-    setDeleteSuccess(true);
+      // ✅ Reload lại danh sách khách hàng
+      await fetchCustomers();
 
-  } catch (error) {
-    console.error("Lỗi xóa khách hàng:", error);
-    alert("Xóa khách hàng thất bại! Vui lòng kiểm tra Server.");
-  }
-};
+      // ✅ HIỂN THỊ MOCKUP XÓA THÀNH CÔNG
+      setDeleteSuccess(true);
+
+    } catch (error) {
+      console.error("Lỗi xóa khách hàng:", error);
+      alert("Xóa khách hàng thất bại! Vui lòng kiểm tra Server.");
+    }
+  };
 
   // ----- FILTER --------
   const filtered = customers.filter(c =>
-  (c.hoTen || "").toLowerCase().includes(search.name.toLowerCase()) &&
-  (c.soDienThoai || "").includes(search.phone) &&
-  (search.address === "" || c.diaChi === search.address)
-);
+    (c.hoTen || "").toLowerCase().includes(search.name.toLowerCase()) &&
+    (c.soDienThoai || "").includes(search.phone) &&
+    (search.address === "" || c.diaChi === search.address)
+  );
 
   // ----- PHÂN TRANG -------
   const [currentPage, setCurrentPage] = useState(1);
@@ -112,8 +113,6 @@ useEffect(() => {
 
   return (
     <div>
-      <Header />
-
       <div className="p-6 bg-gray-100 min-h-screen font-sans">
         <h1 className="text-4xl font-bold text-center pb-5 text-orange-600">
           DANH SÁCH KHÁCH HÀNG
@@ -132,7 +131,7 @@ useEffect(() => {
                 placeholder="Nhập họ tên..."
                 value={search.name}
                 onChange={e =>
-                  handleSearchChange("name", e.target.value) 
+                  handleSearchChange("name", e.target.value)
                 }
               />
             </div>
@@ -206,116 +205,116 @@ useEffect(() => {
             </div>
           ) : (
             <div className="bg-white rounded-lg shadow-md overflow-hidden border border-orange-400">
-            <table className="w-full text-sm text-left border-collapse">
-              <thead className=" text-white uppercase bg-orange-500">
-                <tr className="text-center">
-                  {/* Thêm border-x và border-white để phân tách rõ các cột tiêu đề */}
-                  <th className="p-4 border border-orange-400 border-r-white/30">Mã KH</th>
-                  <th className="p-4 border border-orange-400 border-r-white/30">Họ và tên</th>
-                  <th className="p-4 border border-orange-400 border-r-white/30">Số điện thoại</th>
-                  <th className="p-4 border border-orange-400 border-r-white/30">Giới tính</th>
-                  <th className="p-4 border border-orange-400 border-r-white/30">Địa chỉ</th>
-                  <th className="p-4 border border-orange-400 border-r-white/30">Sửa</th>
-                  <th className="p-4 border border-orange-400 border-r-white/30">Xóa</th>
-                  <th className="p-4 border border-orange-400">Thông Tin Xe</th>
-                </tr>
-              </thead>
-
-              <tbody>
-                {currentCustomers.length === 0 ? (
-                  <tr>
-                    <td
-                      colSpan="8"
-                      className="text-center py-10 text-gray-500 border border-orange-400"
-                    >
-                      Không tìm thấy khách hàng nào
-                    </td>
+              <table className="w-full text-sm text-left border-collapse">
+                <thead className=" text-white uppercase bg-orange-500">
+                  <tr className="text-center">
+                    {/* Thêm border-x và border-white để phân tách rõ các cột tiêu đề */}
+                    <th className="p-4 border border-orange-400 border-r-white/30">Mã KH</th>
+                    <th className="p-4 border border-orange-400 border-r-white/30">Họ và tên</th>
+                    <th className="p-4 border border-orange-400 border-r-white/30">Số điện thoại</th>
+                    <th className="p-4 border border-orange-400 border-r-white/30">Giới tính</th>
+                    <th className="p-4 border border-orange-400 border-r-white/30">Địa chỉ</th>
+                    <th className="p-4 border border-orange-400 border-r-white/30">Sửa</th>
+                    <th className="p-4 border border-orange-400 border-r-white/30">Xóa</th>
+                    <th className="p-4 border border-orange-400">Thông Tin Xe</th>
                   </tr>
-                ) : (
-                  currentCustomers.map((kh, index) => (
-                    <tr
-                      key={`kh-${kh.maKhachHang ?? index}`}
-                      className="hover:bg-orange-50 transition text-center"
-                    >
-                      {/* Thêm border border-orange-500 vào từng ô td */}
-                      <td className="p-4 font-medium text-gray-900 border border-orange-400">
-                        {kh.maKhachHang.substring(0, 8).toUpperCase()}
-                      </td>
-                      <td className="p-4 text-center border border-orange-400">
-                        {kh.hoTen}
-                      </td>
-                      <td className="p-4 border border-orange-400">
-                        {kh.soDienThoai}
-                      </td>
-                      <td className="p-4 border border-orange-400">
-                        {kh.gioiTinh}
-                      </td>
-                      <td className="p-4 text-center border border-orange-400">
-                        {kh.diaChi}
-                      </td>
-                      <td className="p-4 border border-orange-400">
-                        <a href={`/updateKH/${kh.maKhachHang}`} title="Sửa">
-                          <span className="inline-block hover:scale-125 transition-transform duration-300">
-                            ✏️
-                          </span>
-                        </a>
-                      </td>
-                      <td className="p-4 border border-orange-400">
-                        <button
-                          title="Xóa"
-                          className="hover:scale-125 transition-transform"
-                          onClick={() => handleDelete(kh.maKhachHang)}
-                        >
-                          🗑️
-                        </button>
-                      </td>
-                      <td className="p-4 border border-orange-400">
-                        <button
-                          title="Xem chi tiết xe"
-                          className="hover:scale-125 transition-transform"
-                          onClick={() => {
-                          // 1. Lọc xe ngay lập tức dựa trên dữ liệu khách hàng (kh) đang được map
-                          const xeTheoKH = xeList.filter(xe => {
-                            // Truy cập vào khachHang theo Entity Java (chữ k thường)
-                            const maKhTrongXe = xe?.khachHang?.maKhachHang || xe?.maKhachHang || xe?.makhachhang;
-                            const maKhHienTai = kh?.maKhachHang;
-                            
-                            return String(maKhTrongXe || "").trim() === String(maKhHienTai || "").trim();
-                          });
+                </thead>
 
-                          console.log("🚗 Danh sách xe tìm thấy cho " + kh.maKhachHang + ":", xeTheoKH);
-
-                          // 2. Cập nhật dữ liệu vào state selected để hiển thị lên Modal
-                          if (xeTheoKH.length > 0) {
-                            const xeInfo = xeTheoKH[0];
-                            setSelected({
-                              loaiXe: xeInfo.tenXe || xeInfo.tenxe || "Không rõ loại xe",
-                              bienSo: xeInfo.bienSo || xeInfo.bienso || "Không biển số",
-                              maKH: kh.maKhachHang,
-                              tenKH: kh.hoTen
-                            });
-                          } else {
-                            setSelected({
-                              loaiXe: "N/A",
-                              bienSo: "N/A",
-                              maKH: kh.maKhachHang,
-                              tenKH: kh.hoTen,
-                            });
-                          }
-
-                          setOpen(true);
-                        }}
-
-                        >
-                          👁️
-                        </button>
+                <tbody>
+                  {currentCustomers.length === 0 ? (
+                    <tr>
+                      <td
+                        colSpan="8"
+                        className="text-center py-10 text-gray-500 border border-orange-400"
+                      >
+                        Không tìm thấy khách hàng nào
                       </td>
                     </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
+                  ) : (
+                    currentCustomers.map((kh, index) => (
+                      <tr
+                        key={`kh-${kh.maKhachHang ?? index}`}
+                        className="hover:bg-orange-50 transition text-center"
+                      >
+                        {/* Thêm border border-orange-500 vào từng ô td */}
+                        <td className="p-4 font-medium text-gray-900 border border-orange-400">
+                          {kh.maKhachHang.substring(0, 8).toUpperCase()}
+                        </td>
+                        <td className="p-4 text-center border border-orange-400">
+                          {kh.hoTen}
+                        </td>
+                        <td className="p-4 border border-orange-400">
+                          {kh.soDienThoai}
+                        </td>
+                        <td className="p-4 border border-orange-400">
+                          {kh.gioiTinh}
+                        </td>
+                        <td className="p-4 text-center border border-orange-400">
+                          {kh.diaChi}
+                        </td>
+                        <td className="p-4 border border-orange-400">
+                          <a href={`/updateKH/${kh.maKhachHang}`} title="Sửa">
+                            <span className="inline-block hover:scale-125 transition-transform duration-300">
+                              ✏️
+                            </span>
+                          </a>
+                        </td>
+                        <td className="p-4 border border-orange-400">
+                          <button
+                            title="Xóa"
+                            className="hover:scale-125 transition-transform"
+                            onClick={() => handleDelete(kh.maKhachHang)}
+                          >
+                            🗑️
+                          </button>
+                        </td>
+                        <td className="p-4 border border-orange-400">
+                          <button
+                            title="Xem chi tiết xe"
+                            className="hover:scale-125 transition-transform"
+                            onClick={() => {
+                              // 1. Lọc xe ngay lập tức dựa trên dữ liệu khách hàng (kh) đang được map
+                              const xeTheoKH = xeList.filter(xe => {
+                                // Truy cập vào khachHang theo Entity Java (chữ k thường)
+                                const maKhTrongXe = xe?.khachHang?.maKhachHang || xe?.maKhachHang || xe?.makhachhang;
+                                const maKhHienTai = kh?.maKhachHang;
+
+                                return String(maKhTrongXe || "").trim() === String(maKhHienTai || "").trim();
+                              });
+
+                              console.log("🚗 Danh sách xe tìm thấy cho " + kh.maKhachHang + ":", xeTheoKH);
+
+                              // 2. Cập nhật dữ liệu vào state selected để hiển thị lên Modal
+                              if (xeTheoKH.length > 0) {
+                                const xeInfo = xeTheoKH[0];
+                                setSelected({
+                                  loaiXe: xeInfo.tenXe || xeInfo.tenxe || "Không rõ loại xe",
+                                  bienSo: xeInfo.bienSo || xeInfo.bienso || "Không biển số",
+                                  maKH: kh.maKhachHang,
+                                  tenKH: kh.hoTen
+                                });
+                              } else {
+                                setSelected({
+                                  loaiXe: "N/A",
+                                  bienSo: "N/A",
+                                  maKH: kh.maKhachHang,
+                                  tenKH: kh.hoTen,
+                                });
+                              }
+
+                              setOpen(true);
+                            }}
+
+                          >
+                            👁️
+                          </button>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
           )}
         </div>
 
@@ -409,7 +408,7 @@ useEffect(() => {
               </button>
             </div>
           </div>
-)}
+        )}
       </div>
     </div>
   );

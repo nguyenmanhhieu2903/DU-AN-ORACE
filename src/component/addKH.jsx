@@ -133,25 +133,25 @@ const AddKH = () => {
           {/* ===== BIỂN SỐ & UPLOAD ===== */}
           <div className="border-2 border-orange-300 p-4 rounded-xl bg-orange-50/50 hover:shadow-md transition">
             <p className="font-semibold text-orange-600 mb-2">📷 Nhận diện biển số</p>
-            
+
             {khachHang.bienSo && (
               <p className="text-green-600 text-sm mb-2">✔ Đã nhận diện: {khachHang.bienSo}</p>
             )}
 
             <div className="flex flex-col gap-3">
               {/* Input file ẩn hoàn toàn */}
-              <input 
-                type="file" 
-                id="file-upload" 
-                onChange={handleFileChange} 
-                className="hidden" 
+              <input
+                type="file"
+                id="file-upload"
+                onChange={handleFileChange}
+                className="hidden"
               />
-              
+
               <div className="flex gap-2">
                 {/* 1. NÚT CHỌN ẢNH: Chỉ hiện khi CHƯA có file */}
                 {!file && (
-                  <label 
-                    htmlFor="file-upload" 
+                  <label
+                    htmlFor="file-upload"
                     className="cursor-pointer bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600 transition text-sm shadow-md flex items-center gap-2"
                   >
                     <span>📁 Chọn ảnh biển số</span>
@@ -184,10 +184,10 @@ const AddKH = () => {
               {/* Hiển thị ảnh đã chọn */}
               {preview && (
                 <div className="relative mt-2 w-fit">
-                  <img 
-                    src={preview} 
-                    alt="Preview" 
-                    className="h-32 rounded-lg border-2 border-orange-200 object-cover shadow-sm" 
+                  <img
+                    src={preview}
+                    alt="Preview"
+                    className="h-32 rounded-lg border-2 border-orange-200 object-cover shadow-sm"
                   />
                 </div>
               )}

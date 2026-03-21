@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import Footer from "./footer";
 
 const Home = () => {
     const [openMenu, setOpenMenu] = useState(false);
@@ -200,6 +201,7 @@ const Home = () => {
                 </aside>
 
             </main>
+            <Footer />
         </div>
     );
 };

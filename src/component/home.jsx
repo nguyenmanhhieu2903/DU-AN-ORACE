@@ -12,10 +12,42 @@ const Home = () => {
     ];
 
     const posts = [
-        { id: 1, title: "Bãi đỗ xe thông minh hiện đại 1", desc: "Giải pháp tối ưu cho doanh nghiệp", date: "20/03/2026", views: 1200, isNew: true },
-        { id: 2, title: "Bãi đỗ xe thông minh hiện đại 2", desc: "Giải pháp tối ưu cho doanh nghiệp", date: "18/03/2026", views: 980, isNew: false },
-        { id: 3, title: "Bãi đỗ xe thông minh hiện đại 3", desc: "Giải pháp tối ưu cho doanh nghiệp", date: "15/03/2026", views: 760, isNew: true },
-        { id: 4, title: "Bãi đỗ xe thông minh hiện đại 4", desc: "Giải pháp tối ưu cho doanh nghiệp", date: "10/03/2026", views: 540, isNew: false }
+        {
+            id: 1,
+            title: "Hệ thống nhận diện biển số AI thế hệ mới",
+            desc: "Giải pháp tối ưu cho doanh nghiệp với độ chính xác 99.9%",
+            date: "20/03/2026",
+            views: 1200,
+            isNew: true,
+            image: "https://images.unsplash.com/photo-1506521781263-d8422e82f27a?q=80&w=400&auto=format&fit=crop"
+        },
+        {
+            id: 2,
+            title: "Xu hướng bãi đỗ xe thông minh năm 2026",
+            desc: "Tích hợp thanh toán không chạm và điều hướng tự động",
+            date: "18/03/2026",
+            views: 980,
+            isNew: false,
+            image: "img/xe.jpg"
+        },
+        {
+            id: 3,
+            title: "Tối ưu hóa không gian đỗ xe trong đô thị",
+            desc: "Sử dụng cảm biến siêu âm để quản lý mật độ xe",
+            date: "15/03/2026",
+            views: 760,
+            isNew: true,
+            image: "https://images.unsplash.com/photo-1573348722427-f1d6819fdf98?q=80&w=400&auto=format&fit=crop"
+        },
+        {
+            id: 4,
+            title: "An ninh bãi xe: Bảo vệ tài sản bằng Camera AI",
+            desc: "Hệ thống cảnh báo xâm nhập và nhận diện khuôn mặt",
+            date: "10/03/2026",
+            views: 540,
+            isNew: false,
+            image: "/img/xe2.jpg"
+        }
     ];
 
     const services = [
@@ -171,7 +203,13 @@ const Home = () => {
                                         className="group flex gap-4 cursor-pointer transition-all"
                                     >
                                         <div className="relative shrink-0">
-                                            <img src="/img/oto.jpg" className="w-24 h-20 rounded-xl object-cover group-hover:ring-2 ring-indigo-500 transition-all" alt="" />
+                                            {/* Sửa src="/img/oto.jpg" thành item.image */}
+                                            <img
+                                                src={item.image || "/img/oto.jpg"}
+                                                className="w-24 h-20 rounded-xl object-cover group-hover:ring-2 ring-indigo-500 transition-all"
+                                                alt={item.title}
+                                            />
+
                                             {item.isNew && (
                                                 <span className="absolute -top-2 -left-2 bg-red-500 text-white text-[10px] font-bold px-2 py-1 rounded-lg shadow-sm">
                                                     NEW

@@ -6,8 +6,8 @@ const Home = () => {
     const navigate = useNavigate();
 
     const menuItems = [
-        { name: "Quản Lý Hóa Đơn", path: "/ticketlist" },
-        { name: "Khách Hàng", path: "/listKH" } // Hãy đảm bảo bên App.js bạn đặt path đúng là "/listKH"
+        { name: "Quét Biển Số", path: "/scan-qr" },
+        { name: "Check Out", path: "/checkout" }
     ];
 
     const posts = [

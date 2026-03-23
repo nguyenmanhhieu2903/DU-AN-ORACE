@@ -141,21 +141,29 @@ const Home = () => {
                             ))}
 
                             {/* LOGIC HIỂN THỊ ADMIN */}
+                            {/* LOGIC HIỂN THỊ ADMIN - ĐÃ THÊM CLICK CHUYỂN TRANG */}
                             {user === 'admin' ? (
                                 <div className="flex items-center gap-3 ml-4">
                                     <div className="flex flex-col items-end">
-                                        <span className="text-sm font-black text-red-600 bg-red-50 px-3 py-1 rounded-full border border-red-200">
+                                        <span
+                                            // Thêm sự kiện click để chuyển hướng
+                                            onClick={() => navigate("/listKH")}
+                                            className="text-sm font-black text-red-600 bg-red-50 px-3 py-1 rounded-full border border-red-200 cursor-pointer hover:bg-red-100 hover:scale-105 transition-all shadow-sm"
+                                            title="Quản lý khách hàng"
+                                        >
                                             🛡️ ADMIN
                                         </span>
                                     </div>
                                     <button
                                         onClick={handleLogout}
-                                        className="text-gray-400 hover:text-red-500 text-xl font-bold"
+                                        className="text-gray-400 hover:text-red-500 text-xl font-bold transition-colors"
+                                        title="Đăng xuất"
                                     >
                                         ✕
                                     </button>
                                 </div>
                             ) : (
+                                // ... giữ nguyên phần nút ĐĂNG NHẬP cũ
                                 <button
                                     onClick={() => navigate("/login")}
                                     className="ml-4 px-5 py-2 bg-orange-500 text-white rounded-lg font-semibold hover:bg-indigo-700 transition"

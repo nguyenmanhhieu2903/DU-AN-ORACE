@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import Header from "./home";
+import AdminHeader from "./header.jsx";
 import axios from "axios";
 
 const ListKH = () => {
@@ -113,6 +113,7 @@ const ListKH = () => {
 
   return (
     <div>
+      <AdminHeader />
       <div className="p-6 bg-gray-100 min-h-screen font-sans">
         <h1 className="text-4xl font-bold text-center pb-5 text-orange-600">
           DANH SÁCH KHÁCH HÀNG

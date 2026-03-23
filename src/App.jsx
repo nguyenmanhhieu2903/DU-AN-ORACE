@@ -11,6 +11,9 @@ import UpdateKH from './component/updateKH.jsx'
 import QrScanner from "./component/QrScanner";
 import Checkout from './component/Checkuot.jsx'
 import Home from './component/home.jsx'
+import AddTicket from './component/addticket.jsx'
+import AdminHeader from './component/header.jsx'
+
 
 function App() {
   return (
@@ -24,6 +27,8 @@ function App() {
         <Route path="/updateKH/:maKH" element={<UpdateKH />} />
         <Route path="/scan-qr" element={<QrScanner />} />
         <Route path="/checkout" element={<Checkout />} />
+        <Route path="/addticket" element={<AddTicket />} />
+        <Route path="/header" element={<AdminHeader />} />
       </Routes>
     </Router>
   );

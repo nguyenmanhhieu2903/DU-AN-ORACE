@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import Header from "./home";
+import AdminHeader from "./header.jsx";
 import axios from "axios";
 
 
@@ -76,6 +76,7 @@ const TicketList = () => {
 
   return (
     <div>
+      <AdminHeader />
       <h1 className="text-4xl font-bold text-center mb-5">DANH SÁCH HÓA ĐƠN</h1>
 
       {/* Search */}

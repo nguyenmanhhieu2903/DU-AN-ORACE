@@ -1,13 +1,39 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Footer from "./footer";
 
 const Home = () => {
     const [openMenu, setOpenMenu] = useState(false);
+    const [user, setUser] = useState(null); // Lưu trạng thái người dùng
     const navigate = useNavigate();
 
+    // 1. Kiểm tra trạng thái đăng nhập khi tải trang
+    useEffect(() => {
+        const savedUser = localStorage.getItem("userRole");
+        if (savedUser) {
+            setUser(savedUser);
+        }
+    }, []);
+
+    // 2. Hàm đăng xuất
+    const handleLogout = () => {
+        localStorage.removeItem("userRole");
+        setUser(null);
+        navigate("/"); // Chuyển hướng về trang chủ
+    };
+
+    //Hàm kiểm tra quyền truy cập
+    const handleProtectedNavigation = (path) => {
+        if (!user) {
+            alert("Vui lòng đăng nhập để sử dụng tính năng này!");
+            navigate("/login");
+        } else {
+            navigate(path);
+        }
+    };
+
     const menuItems = [
-        { name: "Quét Biển Số", path: "/scan-qr" },
+        { name: "Check In", path: "/scan-qr" },
         { name: "Check Out", path: "/checkout" }
     ];
 
@@ -28,7 +54,7 @@ const Home = () => {
             date: "18/03/2026",
             views: 980,
             isNew: false,
-            image: "img/xe.jpg"
+            image: "https://images.unsplash.com/photo-1573348722427-f1d6819fdf98?q=80&w=400&auto=format&fit=crop"
         },
         {
             id: 3,
@@ -37,7 +63,7 @@ const Home = () => {
             date: "15/03/2026",
             views: 760,
             isNew: true,
-            image: "https://images.unsplash.com/photo-1573348722427-f1d6819fdf98?q=80&w=400&auto=format&fit=crop"
+            image: "/img/xe.jpg"
         },
         {
             id: 4,
@@ -48,6 +74,7 @@ const Home = () => {
             isNew: false,
             image: "/img/xe2.jpg"
         }
+
     ];
 
     const services = [
@@ -70,29 +97,27 @@ const Home = () => {
 
                     {/* DESKTOP NAV */}
                     <div className="hidden md:flex items-center gap-8">
-                        {/* SEARCH */}
                         <div className="flex border border-indigo-200 rounded-lg overflow-hidden bg-gray-50">
                             <input placeholder="Tìm kiếm..." className="px-3 py-1.5 outline-none bg-transparent w-60" />
-                            <button className="bg-orange-500 text-white px-4 hover:bg-orange-600 transition">
-                                Sreach
+                            <button className="bg-orange-500 text-white px-4 hover:bg-indigo-600 transition">
+                                Search
                             </button>
                         </div>
 
-                        {/* MENU LINKS */}
                         <div className="flex gap-6 items-center">
-                            {/* DỊCH VỤ DROPDOWN */}
+                            {/* DỊCH VỤ */}
                             <div className="relative group py-2">
                                 <span className="cursor-pointer text-orange-600 font-medium hover:text-indigo-600 transition">
                                     Dịch Vụ ▼
                                 </span>
-                                <div className="absolute left-1/2 -translate-x-1/2 top-full w-[450px] bg-white rounded-xl shadow-2xl p-4 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 border border-gray-100">
+                                <div className="absolute left-1/2 -translate-x-1/2 top-full w-[400px] bg-white rounded-xl shadow-2xl p-4 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 border border-gray-100">
                                     <div className="grid grid-cols-2 gap-3">
                                         {services.map((item, i) => (
                                             <div key={i} onClick={() => navigate(item.path)} className="p-3 cursor-pointer hover:bg-indigo-50 rounded-xl flex items-center gap-3 transition">
                                                 <span className="text-2xl">{item.icon}</span>
                                                 <div>
-                                                    <p className="font-semibold text-sm">{item.title}</p>
-                                                    <p className="text-xs text-gray-500">{item.desc}</p>
+                                                    <p className="font-semibold text-xs">{item.title}</p>
+                                                    <p className="text-[10px] text-gray-500">{item.desc}</p>
                                                 </div>
                                             </div>
                                         ))}
@@ -100,48 +125,55 @@ const Home = () => {
                                 </div>
                             </div>
 
-                            {/* DYNAMIC MENU ITEMS danh sach menu */}
+                            {/* PHẦN MENU ĐÃ ĐƯỢC BẢO VỆ */}
                             {menuItems.map((item, i) => (
                                 <span
                                     key={i}
-                                    onClick={() => navigate(item.path)}
-                                    className="cursor-pointer font-medium text-orange-500 hover:text-indigo-600 transition relative after:content-[''] after:absolute after:bottom-[-4px] after:left-0 after:w-0 after:h-0.5 after:bg-indigo-600 hover:after:w-full after:transition-all"
+                                    // Gọi hàm kiểm tra thay vì navigate trực tiếp
+                                    onClick={() => handleProtectedNavigation(item.path)}
+                                    className={`cursor-pointer font-medium transition flex items-center gap-1 ${!user
+                                        ? "text-gray-400 hover:text-orange-400" // Khi chưa đăng nhập (màu xám)
+                                        : "text-orange-500 hover:text-indigo-600" // Khi đã đăng nhập (màu cam)
+                                        }`}
                                 >
-                                    {item.name}
+                                    {!user && <span className="text-[10px]">🔒</span>} {item.name}
                                 </span>
                             ))}
 
-                            <button
-                                onClick={() => navigate("/login")}
-                                className="ml-4 px-5 py-2 bg-orange-500 text-white rounded-lg font-semibold hover:bg-indigo-700 shadow-lg shadow-indigo-200 transition"
-                            >
-                                ĐĂNG NHẬP
-                            </button>
+                            {/* LOGIC HIỂN THỊ ADMIN */}
+                            {user === 'admin' ? (
+                                <div className="flex items-center gap-3 ml-4">
+                                    <div className="flex flex-col items-end">
+                                        <span className="text-sm font-black text-red-600 bg-red-50 px-3 py-1 rounded-full border border-red-200">
+                                            🛡️ ADMIN
+                                        </span>
+                                    </div>
+                                    <button
+                                        onClick={handleLogout}
+                                        className="text-gray-400 hover:text-red-500 text-xl font-bold"
+                                    >
+                                        ✕
+                                    </button>
+                                </div>
+                            ) : (
+                                <button
+                                    onClick={() => navigate("/login")}
+                                    className="ml-4 px-5 py-2 bg-orange-500 text-white rounded-lg font-semibold hover:bg-indigo-700 transition"
+                                >
+                                    ĐĂNG NHẬP
+                                </button>
+                            )}
                         </div>
                     </div>
 
-                    {/* MOBILE TOGGLE */}
-                    <button className="md:hidden text-2xl p-2" onClick={() => setOpenMenu(!openMenu)}>
+                    <button className="md:hidden text-2xl" onClick={() => setOpenMenu(!openMenu)}>
                         {openMenu ? "✕" : "☰"}
                     </button>
                 </div>
-
-                {/* MOBILE MENU CONTENT */}
-                {openMenu && (
-                    <div className="md:hidden bg-white border-t p-4 space-y-4 shadow-xl">
-                        {menuItems.map((item, i) => (
-                            <div key={i} onClick={() => { navigate(item.path); setOpenMenu(false); }} className="block py-2 text-gray-700 font-medium border-b border-gray-50">
-                                {item.name}
-                            </div>
-                        ))}
-                        <button onClick={() => navigate("/login")} className="w-full py-3 bg-indigo-600 text-white rounded-lg">Đăng nhập</button>
-                    </div>
-                )}
             </nav>
 
             {/* MAIN CONTENT */}
-            <main className="max-w-7xl mx-auto px-4 md:px-6 py-8 grid grid-cols-1 md:grid-cols-12 gap-8">
-
+            <main className="max-w-7xl mx-auto px-6 py-8 grid grid-cols-1 md:grid-cols-12 gap-8">
                 {/* LEFT CONTENT (BÀI VIẾT) */}
                 <div className="col-span-8 bg-white p-6 rounded-lg shadow">
                     <h1 className="text-2xl font-bold mb-4">
@@ -237,7 +269,6 @@ const Home = () => {
                         </div>
                     </div>
                 </aside>
-
             </main>
             <Footer />
         </div>
@@ -245,3 +276,4 @@ const Home = () => {
 };
 
 export default Home;
+
